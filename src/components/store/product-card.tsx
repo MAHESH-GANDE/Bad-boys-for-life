@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Heart } from "lucide-react";
 import { useState } from "react";
 import { discountPercent, formatInr } from "@/lib/utils";
+import { sortColourEntries, brandColors } from "@/lib/colors";
 import type { ProductCardData } from "@/lib/catalog";
 import { useToast } from "@/components/providers";
 import { useCartDrawer } from "@/components/store/cart-drawer";
@@ -18,7 +19,9 @@ export function ProductCard({ product }: { product: ProductCardData }) {
   const price = Math.min(...product.variants.map((v) => v.price));
   const mrp = Math.min(...product.variants.map((v) => v.mrp));
   const off = discountPercent(mrp, price);
-  const colours = [...new Map(product.variants.map((v) => [v.colour, v.colourHex])).entries()];
+  const colours = sortColourEntries(
+    [...new Map(product.variants.map((v) => [v.colour, v.colourHex])).entries()],
+  );
   const inStock = product.variants.some((v) => (v.inventory?.available ?? 0) > 0);
   const low = product.variants.some((v) => (v.inventory?.available ?? 0) > 0 && (v.inventory?.available ?? 0) <= (v.inventory?.lowStockAt ?? 5));
   const defaultVariant = product.variants.find((v) => (v.inventory?.available ?? 0) > 0) ?? product.variants[0];
@@ -85,15 +88,18 @@ export function ProductCard({ product }: { product: ProductCardData }) {
         </div>
       </Link>
       <div className="mt-2 flex flex-wrap gap-1.5">
-        {colours.map(([name, hex]) => (
+        {colours.map(([name, hex]) => {
+          const slug = brandColors.find((c) => c.name === name)?.slug ?? name.toLowerCase().replace(/\s+/g, "-");
+          return (
           <Link
             key={name}
-            href={`/shop?colour=${encodeURIComponent(name)}`}
+            href={`/collections/color/${slug}`}
             title={name}
             className="h-3.5 w-3.5 border border-bb-off/35 transition hover:scale-110 hover:border-bb-off"
             style={{ background: hex }}
           />
-        ))}
+          );
+        })}
       </div>
       <button
         aria-label="Save"

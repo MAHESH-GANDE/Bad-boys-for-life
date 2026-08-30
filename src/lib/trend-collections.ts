@@ -42,7 +42,7 @@ export const trendCollections: TrendCollection[] = [
     slug: "bestsellers",
     title: "BEST SELLERS",
     subtitle: "Most wanted — all colours.",
-    image: "/images/hero-menswear.jpg",
+    image: "/images/product-coord.jpg",
     href: "/bestsellers",
   },
   {

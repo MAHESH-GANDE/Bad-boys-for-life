@@ -3,7 +3,7 @@ import Image from "next/image";
 import { prisma } from "@/lib/db";
 import { trendCollections } from "@/lib/trend-collections";
 import { PremiumCollectionCard } from "@/components/store/premium-collection-card";
-import { ColorFilterBar } from "@/components/store/color-filter-bar";
+import { ColorCollectionsGrid } from "@/components/store/color-collections-grid";
 
 export default async function CollectionsPage() {
   const cols = await prisma.collection.findMany({ where: { published: true }, orderBy: { sortOrder: "asc" } });
@@ -23,7 +23,7 @@ export default async function CollectionsPage() {
         </div>
       </section>
 
-      <ColorFilterBar />
+      <ColorCollectionsGrid />
 
       <section className="mx-auto max-w-7xl px-4 py-16 md:py-20">
         <p className="mb-8 text-[10px] tracking-[0.32em] text-bb-off/50">FEATURED</p>

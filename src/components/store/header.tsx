@@ -4,13 +4,14 @@ import Link from "next/link";
 import { useState } from "react";
 import { Search, Heart, User, ShoppingBag, Menu, X } from "lucide-react";
 import { SkullMark, Wordmark } from "@/components/brand/mark";
+import { brandColors } from "@/lib/colors";
 import { useCartDrawer } from "@/components/store/cart-drawer";
 
 const nav = [
   { href: "/new-arrivals", label: "NEW IN" },
+  { href: "/collections/colours", label: "COLOURS" },
   { href: "/shop", label: "SHOP", mega: true },
   { href: "/collections", label: "COLLECTIONS" },
-  { href: "/bestsellers", label: "BESTSELLERS" },
   { href: "/sale", label: "SALE" },
 ];
 
@@ -80,20 +81,14 @@ export function Header({ categories }: { categories: Cat[] }) {
         >
           <div className="mx-auto grid max-w-7xl grid-cols-3 gap-10 px-8 py-10">
             <div>
-              <p className="mb-4 text-[10px] tracking-[0.28em] text-bb-off/50">COLOUR</p>
+              <p className="mb-4 text-[10px] tracking-[0.28em] text-bb-off/50">COLOUR COLLECTIONS</p>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <Link href="/shop">All colours</Link>
+                  <Link href="/collections/colours">All colours</Link>
                 </li>
-                {[
-                  ["Black", "Black"],
-                  ["Off-White", "Off-White"],
-                  ["White", "White"],
-                  ["Blood", "Blood"],
-                  ["Charcoal", "Charcoal"],
-                ].map(([label, name]) => (
-                  <li key={name}>
-                    <Link href={`/shop?colour=${encodeURIComponent(name)}`}>{label}</Link>
+                {brandColors.map((color) => (
+                  <li key={color.slug}>
+                    <Link href={`/collections/color/${color.slug}`}>{color.name}</Link>
                   </li>
                 ))}
               </ul>
