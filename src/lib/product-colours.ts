@@ -1,12 +1,17 @@
 import type { ProductCardData } from "@/lib/catalog";
 import { brandColors, colorBySlug, resolveColorSlug } from "@/lib/colors";
+import { canonicalImageForColour } from "@/lib/colour-images";
 
 type ProductImages = Pick<ProductCardData, "images">;
 type ProductWithVariants = ProductImages & Pick<ProductCardData, "variants">;
 
 export function productImageForColour(product: ProductImages, colourName: string) {
+  const tagged = product.images.find((i) => i.colour === colourName);
+  if (tagged) return tagged;
+  const fallback = canonicalImageForColour(colourName);
+  const byUrl = product.images.find((i) => i.url === fallback);
+  if (byUrl) return { ...byUrl, colour: colourName };
   return (
-    product.images.find((i) => i.colour === colourName) ??
     product.images.find((i) => !i.colour) ??
     product.images[0] ??
     null

@@ -7,7 +7,8 @@ import { formatInr, discountPercent } from "@/lib/utils";
 import { useToast } from "@/components/providers";
 import { useCartDrawer } from "@/components/store/cart-drawer";
 import { SizeGuideModal } from "@/components/store/size-guide-modal";
-import { colourSlugFromName, resolveProductColour } from "@/lib/product-colours";
+import { colourSlugFromName, productImageForColour, resolveProductColour } from "@/lib/product-colours";
+import { sortColourEntries } from "@/lib/colors";
 
 type Product = {
   id: string;
@@ -46,7 +47,9 @@ export function ProductDetail({
   initialColourSlug?: string | null;
 }) {
   const router = useRouter();
-  const colours = [...new Map(product.variants.map((v) => [v.colour, v.colourHex])).entries()];
+  const colours = sortColourEntries(
+    [...new Map(product.variants.map((v) => [v.colour, v.colourHex])).entries()],
+  );
   const [colour, setColour] = useState(() => resolveProductColour(product, initialColourSlug) ?? colours[0][0]);
   const [size, setSize] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
@@ -67,14 +70,18 @@ export function ProductDetail({
     setSize(null);
   }, [colour]);
 
-  const images = product.images.filter((i) => !i.colour || i.colour === colour);
+  const activeHex = colours.find(([n]) => n === colour)?.[1] ?? "#888888";
+  const colourImages = product.images.filter((i) => i.colour === colour);
+  const hero = productImageForColour(product, colour);
+  const images = colourImages.length > 0 ? colourImages : hero ? [hero] : product.images;
   const sizes = product.variants.filter((v) => v.colour === colour);
   const variant = sizes.find((v) => v.size === size);
-  const price = variant?.price ?? Math.min(...product.variants.map((v) => v.price));
-  const mrp = variant?.mrp ?? Math.min(...product.variants.map((v) => v.mrp));
+  const sizePool = sizes.length > 0 ? sizes : product.variants.filter((v) => v.colour === colour);
+  const price = variant?.price ?? Math.min(...(sizePool.length ? sizePool : product.variants).map((v) => v.price));
+  const mrp = variant?.mrp ?? Math.min(...(sizePool.length ? sizePool : product.variants).map((v) => v.mrp));
   const off = discountPercent(mrp, price);
   const stock = variant?.inventory?.available ?? 0;
-  const img = images[idx] ?? images[0];
+  const img = images[idx] ?? images[0] ?? hero;
 
   const jsonFaq = useMemo(
     () => [
@@ -118,12 +125,34 @@ export function ProductDetail({
   return (
     <div className="grid gap-10 md:grid-cols-2">
       <div>
-        <div className="relative aspect-square bg-neutral-950">
-          {img && <Image src={img.url} alt={img.alt} fill className="object-cover" priority />}
+        <div className="relative aspect-square overflow-hidden bg-neutral-950">
+          {img && (
+            <Image
+              key={`${colour}-${img.url}`}
+              src={img.url}
+              alt={img.alt}
+              fill
+              className="object-cover"
+              priority
+            />
+          )}
+          <div
+            className="pointer-events-none absolute inset-0 mix-blend-color opacity-[0.18]"
+            style={{ backgroundColor: activeHex }}
+          />
+          <div className="absolute bottom-3 left-3 flex items-center gap-2 bg-bb-black/75 px-3 py-1.5 backdrop-blur-sm">
+            <span className="h-4 w-4 border border-bb-off/40" style={{ backgroundColor: activeHex }} />
+            <span className="text-[10px] tracking-[0.16em]">{colour.toUpperCase()}</span>
+          </div>
         </div>
         <div className="mt-3 flex gap-2 overflow-x-auto">
           {images.map((im, i) => (
-            <button key={im.url + i} className="relative h-16 w-16 shrink-0 border border-bb-off/20" onClick={() => setIdx(i)}>
+            <button
+              key={`${colour}-${im.url}-${i}`}
+              type="button"
+              className={`relative h-16 w-16 shrink-0 border ${idx === i ? "border-bb-off" : "border-bb-off/20"}`}
+              onClick={() => setIdx(i)}
+            >
               <Image src={im.url} alt={im.alt} fill className="object-cover" />
             </button>
           ))}
@@ -156,6 +185,7 @@ export function ProductDetail({
                 aria-label={name}
                 onClick={() => {
                   setColour(name);
+                  setIdx(0);
                   router.replace(`?colour=${colourSlugFromName(name)}`, { scroll: false });
                 }}
                 className={`flex items-center gap-2 border px-2 py-1 text-[10px] tracking-[0.12em] ${
