@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { brandColors, colorTiers, colorsByTier } from "@/lib/colors";
+import { colorTiers, colorsByTier } from "@/lib/colors";
 
 export function ColorCollectionsGrid() {
   return (

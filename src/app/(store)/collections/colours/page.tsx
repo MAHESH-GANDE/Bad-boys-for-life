@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { brandColors, colorTiers, colorsByTier } from "@/lib/colors";
+import { colorTiers, colorsByTier } from "@/lib/colors";
 
 export default function AllColoursPage() {
   return (

@@ -1,4 +1,5 @@
 import type { Prisma } from "@prisma/client";
+import { Prisma as PrismaRuntime } from "@prisma/client";
 import { prisma } from "./db";
 import type { SearchFilters } from "./search";
 import { tokenizeQuery } from "./search";
@@ -11,8 +12,15 @@ export const productCardInclude = {
 
 export type ProductCardData = Prisma.ProductGetPayload<{ include: typeof productCardInclude }>;
 
+/** Strip Prisma Decimal/Date values so client components can receive props safely. */
 export function serialize<T>(value: T): T {
-  return JSON.parse(JSON.stringify(value));
+  return JSON.parse(
+    JSON.stringify(value, (_key, v) => {
+      if (v instanceof PrismaRuntime.Decimal) return v.toNumber();
+      if (v instanceof Date) return v.toISOString();
+      return v;
+    }),
+  );
 }
 
 export async function listProducts(filters: SearchFilters = {}) {
@@ -79,7 +87,7 @@ export async function listProducts(filters: SearchFilters = {}) {
   });
 
   const priced = products.map((p) => {
-    const min = Math.min(...p.variants.map((v) => v.price));
+    const min = Math.min(...p.variants.map((v) => Number(v.price)));
     return { ...p, minPrice: min };
   });
 
