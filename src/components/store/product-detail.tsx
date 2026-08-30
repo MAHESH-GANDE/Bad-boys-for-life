@@ -1,11 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { formatInr, discountPercent } from "@/lib/utils";
 import { useToast } from "@/components/providers";
 import { useCartDrawer } from "@/components/store/cart-drawer";
 import { SizeGuideModal } from "@/components/store/size-guide-modal";
+import { colourSlugFromName, resolveProductColour } from "@/lib/product-colours";
 
 type Product = {
   id: string;
@@ -37,12 +39,15 @@ type Product = {
 export function ProductDetail({
   product,
   sizeGuide,
+  initialColourSlug,
 }: {
   product: Product;
   sizeGuide: { title: string; rows: unknown } | null;
+  initialColourSlug?: string | null;
 }) {
+  const router = useRouter();
   const colours = [...new Map(product.variants.map((v) => [v.colour, v.colourHex])).entries()];
-  const [colour, setColour] = useState(colours[0][0]);
+  const [colour, setColour] = useState(() => resolveProductColour(product, initialColourSlug) ?? colours[0][0]);
   const [size, setSize] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
   const [guide, setGuide] = useState(false);
@@ -51,6 +56,16 @@ export function ProductDetail({
   const [idx, setIdx] = useState(0);
   const toast = useToast();
   const cart = useCartDrawer();
+
+  useEffect(() => {
+    const next = resolveProductColour(product, initialColourSlug);
+    if (next) setColour(next);
+  }, [initialColourSlug, product]);
+
+  useEffect(() => {
+    setIdx(0);
+    setSize(null);
+  }, [colour]);
 
   const images = product.images.filter((i) => !i.colour || i.colour === colour);
   const sizes = product.variants.filter((v) => v.colour === colour);
@@ -130,19 +145,26 @@ export function ProductDetail({
         <p className="mt-4 text-bb-off/70">{product.shortDescription}</p>
 
         <div className="mt-8">
-          <p className="text-[10px] tracking-[0.22em] text-bb-off/50">COLOUR — {colour}</p>
-          <div className="mt-3 flex gap-2">
+          <p className="text-[10px] tracking-[0.22em] text-bb-off/50">
+            COLOUR — {colour} · {colours.length} SHADES
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
             {colours.map(([name, hex]) => (
               <button
                 key={name}
+                type="button"
                 aria-label={name}
                 onClick={() => {
                   setColour(name);
-                  setSize(null);
+                  router.replace(`?colour=${colourSlugFromName(name)}`, { scroll: false });
                 }}
-                className="h-7 w-7 border"
-                style={{ background: hex, borderColor: colour === name ? "#f4f1ea" : "#444" }}
-              />
+                className={`flex items-center gap-2 border px-2 py-1 text-[10px] tracking-[0.12em] ${
+                  colour === name ? "border-bb-off bg-bb-off/10" : "border-bb-off/30"
+                }`}
+              >
+                <span className="h-5 w-5 shrink-0 border border-bb-off/30" style={{ background: hex }} />
+                {name.toUpperCase()}
+              </button>
             ))}
           </div>
         </div>

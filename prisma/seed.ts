@@ -2,10 +2,15 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { defaultSiteConfig } from "../src/lib/settings";
 import { catalogProducts } from "./catalog-seed";
+import { brandColors } from "../src/lib/colors";
 
 const prisma = new PrismaClient();
 
 const SIZES = ["S", "M", "L", "XL", "XXL"] as const;
+
+function paletteHex(name: string, fallback: string) {
+  return brandColors.find((c) => c.name === name)?.hex ?? fallback;
+}
 
 
 async function main() {
@@ -142,7 +147,7 @@ async function main() {
             sku,
             barcode: `890${Math.floor(100000000 + Math.random() * 899999999)}`,
             colour: colour.name,
-            colourHex: colour.hex,
+            colourHex: paletteHex(colour.name, colour.hex),
             size,
             price: p.price,
             mrp: p.mrp,

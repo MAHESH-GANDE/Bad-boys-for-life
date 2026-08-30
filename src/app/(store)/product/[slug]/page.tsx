@@ -23,9 +23,17 @@ export async function generateMetadata({
   };
 }
 
-export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function ProductPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const product = await getProductBySlug((await params).slug);
   if (!product) notFound();
+  const sp = await searchParams;
+  const colourSlug = typeof sp.colour === "string" ? sp.colour : sp.colour?.[0];
   const related = (await listProducts({ category: product.category.slug })).filter((x) => x.id !== product.id).slice(0, 4);
   const sizeGuide = await prisma.sizeGuide.findFirst({
     where: {
@@ -56,7 +64,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 pb-28">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <ProductDetail product={product} sizeGuide={sizeGuide} />
+      <ProductDetail product={product} sizeGuide={sizeGuide} initialColourSlug={colourSlug} />
       <section className="mt-20">
         <h2 className="mb-8 font-display text-3xl tracking-[0.14em]">YOU MAY ALSO LIKE</h2>
         <ProductGrid products={related} />

@@ -3,9 +3,18 @@ import Link from "next/link";
 import type { BrandColor } from "@/lib/colors";
 import { colorMutedTextClass, colorTextClass } from "@/lib/colors";
 
-export function ColorCollectionHero({ color }: { color: BrandColor }) {
+export function ColorCollectionHero({
+  color,
+  previewImage,
+  productCount,
+}: {
+  color: BrandColor;
+  previewImage?: string;
+  productCount?: number;
+}) {
   const text = colorTextClass(color.hex);
   const muted = colorMutedTextClass(color.hex);
+  const heroImage = previewImage ?? color.image;
 
   return (
     <section className="border-b border-bb-off/15 md:grid md:min-h-[40vh] md:grid-cols-2">
@@ -32,14 +41,18 @@ export function ColorCollectionHero({ color }: { color: BrandColor }) {
           </div>
         </div>
         <p className={`mt-4 max-w-md text-sm leading-relaxed ${muted}`}>{color.tagline}</p>
+        {productCount !== undefined && (
+          <p className={`mt-3 text-[10px] tracking-[0.22em] ${muted}`}>
+            {productCount} {productCount === 1 ? "piece" : "pieces"} in {color.name}
+          </p>
+        )}
         <p className={`mt-2 text-[10px] tracking-[0.22em] ${muted}`}>
           {color.stockShare} tier · Matte fabrics only
         </p>
       </div>
 
-      {/* Product preview — clean, no black overlay */}
       <div className="relative min-h-[28vh] md:min-h-0">
-        <Image src={color.image} alt={`${color.name} menswear`} fill className="object-cover" priority />
+        <Image src={heroImage} alt={`${color.name} menswear`} fill className="object-cover" priority />
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.08] mix-blend-color md:hidden"
           style={{ background: color.hex }}

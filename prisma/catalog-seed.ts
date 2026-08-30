@@ -1,3 +1,9 @@
+import { brandColors } from "../src/lib/colors";
+
+function paletteHex(name: string, fallback: string) {
+  return brandColors.find((c) => c.name === name)?.hex ?? fallback;
+}
+
 export type SeedProduct = {
   name: string;
   slug: string;
@@ -51,9 +57,12 @@ export const catalogProducts: SeedProduct[] = [
     sleeve: "Short",
     care: "Machine wash cold. Dry in shade.",
     colours: [
-      { name: "Ecru", hex: "#E8E4DC", images: [{ url: white, kind: "front", alt: "Ecru boxy tee" }] },
-      { name: "Pitch Black", hex: "#0D0D0D", images: [{ url: tee, kind: "front", alt: "Black boxy tee" }] },
-      { name: "Heather Grey", hex: "#8B8F94", images: [{ url: hoodie, kind: "front", alt: "Heather boxy tee" }] },
+      { name: "Ecru", hex: paletteHex("Ecru", "#E8E4DC"), images: [{ url: white, kind: "front", alt: "Ecru boxy tee" }] },
+      { name: "Chalk", hex: paletteHex("Chalk", "#F0EDE8"), images: [{ url: white, kind: "front", alt: "Chalk boxy tee" }] },
+      { name: "Pitch Black", hex: paletteHex("Pitch Black", "#0D0D0D"), images: [{ url: tee, kind: "front", alt: "Black boxy tee" }] },
+      { name: "Heather Grey", hex: paletteHex("Heather Grey", "#8B8F94"), images: [{ url: hoodie, kind: "front", alt: "Heather boxy tee" }] },
+      { name: "Sand", hex: paletteHex("Sand", "#C4B59A"), images: [{ url: coord, kind: "front", alt: "Sand boxy tee" }] },
+      { name: "Warm Taupe", hex: paletteHex("Warm Taupe", "#A69485"), images: [{ url: trouser, kind: "front", alt: "Taupe boxy tee" }] },
     ],
     price: 1299,
     mrp: 1899,
@@ -406,5 +415,31 @@ export const catalogProducts: SeedProduct[] = [
     ],
     price: 2299,
     mrp: 3199,
+  },
+  {
+    name: "Essential Relaxed Tee",
+    slug: "essential-relaxed-tee",
+    sku: "BB-TEE-REL-019",
+    category: "t-shirts",
+    collections: ["essentials", "best-sellers", "summer"],
+    shortDescription: "220 GSM relaxed fit. Six core shades.",
+    description: "Everyday relaxed tee in soft matte cotton. One style, six colourways — ecru, olive, terracotta, ink navy, sage, and washed mint. Each shade has its own product image.",
+    fit: "Relaxed",
+    fabric: "220 GSM cotton",
+    pattern: "Solid",
+    neck: "Crew",
+    sleeve: "Short",
+    care: "Machine wash cold.",
+    colours: [
+      { name: "Ecru", hex: paletteHex("Ecru", "#E8E4DC"), images: [{ url: white, kind: "front", alt: "Ecru relaxed tee" }] },
+      { name: "Olive", hex: paletteHex("Olive", "#4A5239"), images: [{ url: cargo, kind: "front", alt: "Olive relaxed tee" }] },
+      { name: "Terracotta", hex: paletteHex("Terracotta", "#A65D48"), images: [{ url: red, kind: "front", alt: "Terracotta relaxed tee" }] },
+      { name: "Ink Navy", hex: paletteHex("Ink Navy", "#1B2432"), images: [{ url: denimJ, kind: "front", alt: "Navy relaxed tee" }] },
+      { name: "Sage", hex: paletteHex("Sage", "#8A9487"), images: [{ url: tee, kind: "front", alt: "Sage relaxed tee" }] },
+      { name: "Washed Mint", hex: paletteHex("Washed Mint", "#A8B8AD"), images: [{ url: white, kind: "front", alt: "Mint relaxed tee" }] },
+    ],
+    price: 1099,
+    mrp: 1599,
+    isBestseller: true,
   },
 ];

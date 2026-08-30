@@ -8,13 +8,17 @@ type Variant = "portrait" | "landscape";
 export function ColorCollectionCard({
   color,
   variant = "portrait",
+  previewImage,
 }: {
   color: BrandColor;
   variant?: Variant;
+  /** Real product photo in this colour (from catalog). */
+  previewImage?: string;
 }) {
   const text = colorTextClass(color.hex);
   const muted = colorMutedTextClass(color.hex);
   const aspect = variant === "landscape" ? "aspect-[16/11]" : "aspect-[4/5]";
+  const imageSrc = previewImage ?? color.image;
 
   return (
     <Link
@@ -25,7 +29,7 @@ export function ColorCollectionCard({
         {/* Product preview — kept clear, no heavy black wash */}
         <div className="relative min-h-0 flex-1 overflow-hidden">
           <Image
-            src={color.image}
+            src={imageSrc}
             alt={`${color.name} collection`}
             fill
             className="object-cover transition duration-500 group-hover:scale-[1.03]"

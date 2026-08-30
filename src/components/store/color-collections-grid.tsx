@@ -1,8 +1,13 @@
 import Link from "next/link";
+import { listProducts } from "@/lib/catalog";
 import { ColorCollectionCard } from "@/components/store/color-collection-card";
 import { colorTiers, colorsByTier } from "@/lib/colors";
+import { colourPreviewImages } from "@/lib/product-colours";
 
-export function ColorCollectionsGrid() {
+export async function ColorCollectionsGrid() {
+  const products = await listProducts();
+  const previews = colourPreviewImages(products);
+
   return (
     <section className="border-y border-bb-off/15 py-14 md:py-16">
       <div className="mx-auto max-w-7xl px-4">
@@ -11,7 +16,7 @@ export function ColorCollectionsGrid() {
             <p className="text-[10px] tracking-[0.32em] text-bb-off/50">MUTED PALETTE · QUIET LUXURY</p>
             <h2 className="mt-2 font-display text-3xl tracking-[0.16em] md:text-5xl">COLOUR COLLECTIONS</h2>
             <p className="mt-3 max-w-xl text-sm text-bb-off/60">
-              Each card shows the shade and its collection. Tap a colour to shop every piece in that tone.
+              One product, many colours — each card shows a real piece in that shade. Tap to shop the full collection.
             </p>
           </div>
           <Link href="/collections/colours" className="text-[10px] tracking-[0.22em] text-bb-off/50 hover:text-bb-off">
@@ -30,7 +35,11 @@ export function ColorCollectionsGrid() {
                 </div>
                 <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
                   {colors.map((color) => (
-                    <ColorCollectionCard key={color.slug} color={color} />
+                    <ColorCollectionCard
+                      key={color.slug}
+                      color={color}
+                      previewImage={previews.get(color.slug)}
+                    />
                   ))}
                 </div>
               </div>
