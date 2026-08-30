@@ -8,9 +8,20 @@ D2C commerce: storefront, OTP accounts, cart/checkout, Razorpay-ready payments, 
 
 ### Sync code to GitHub
 
-The full project lives on Cursor until you push once to GitHub.
+The full project lives on Cursor until you push once to GitHub. Target repo: **MAHESH-GANDE/Bad-boys-for-life**.
 
-1. In **Cursor → Cloud → Secrets**, add `GH_TOKEN` (GitHub personal access token with `repo` scope for `Bad-boys-for-life`).
+**If the GitHub repo was deleted**, recreate it first:
+
+1. Open [github.com/new](https://github.com/new)
+2. Owner: **MAHESH-GANDE** · Repository name: **Bad-boys-for-life** · Public
+3. Leave **Add a README** unchecked (the project already has one)
+4. Click **Create repository**
+
+Then push using one of these methods:
+
+**A — Cloud Agent with token (recommended)**
+
+1. In **Cursor → Cloud → Secrets**, add `GH_TOKEN` (personal access token with `repo` scope).
 2. Run:
 
 ```bash
@@ -18,7 +29,15 @@ chmod +x scripts/sync-github.sh
 ./scripts/sync-github.sh
 ```
 
-Or from any machine with GitHub login:
+**B — `gh` CLI (device login)**
+
+```bash
+gh auth login --hostname github.com --git-protocol https
+# Open https://github.com/login/device and enter the one-time code
+gh repo create MAHESH-GANDE/Bad-boys-for-life --public --source=. --remote=github --push
+```
+
+**C — From any machine with GitHub login**
 
 ```bash
 git clone https://origin.cursor.com/mahesh-gande/tmp-23a14af72348b21c.git badboys
