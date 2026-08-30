@@ -7,9 +7,9 @@ import { SkullMark, Wordmark } from "@/components/brand/mark";
 import { useCartDrawer } from "@/components/store/cart-drawer";
 
 const nav = [
+  { href: "/collections/black", label: "BLACK" },
   { href: "/new-arrivals", label: "NEW IN" },
   { href: "/shop", label: "CLOTHING", mega: true },
-  { href: "/collections", label: "COLLECTIONS" },
   { href: "/bestsellers", label: "BESTSELLERS" },
   { href: "/sale", label: "SALE" },
 ];
@@ -23,7 +23,7 @@ export function Header({ categories }: { categories: Cat[] }) {
 
   return (
     <header className="sticky top-0 z-50 border-b border-bb-off/15 bg-bb-black/95 backdrop-blur-sm">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:h-[72px]">
+      <div className="mx-auto grid h-16 max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-3 px-4 md:h-[72px] md:flex md:justify-between">
         <button
           className="md:hidden"
           aria-label="Open menu"
@@ -32,9 +32,13 @@ export function Header({ categories }: { categories: Cat[] }) {
           <Menu className="h-5 w-5" />
         </button>
 
-        <Link href="/" className="flex items-center gap-3" aria-label="BADBOYS home">
-          <SkullMark className="h-8 w-7 text-bb-off" />
-          <Wordmark className="hidden text-lg sm:inline" spaced={false} />
+        <Link
+          href="/"
+          className="flex items-center justify-center gap-2 md:justify-start md:gap-3"
+          aria-label="BADBOYS home"
+        >
+          <SkullMark className="h-7 w-6 shrink-0 text-bb-off md:h-8 md:w-7" />
+          <Wordmark className="text-sm md:text-lg" spaced={false} />
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex" onMouseLeave={() => setMega(false)}>
@@ -50,7 +54,7 @@ export function Header({ categories }: { categories: Cat[] }) {
           ))}
         </nav>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center justify-end gap-4">
           <Link href="/search" aria-label="Search" className="hidden sm:block">
             <Search className="h-5 w-5" />
           </Link>
@@ -119,7 +123,10 @@ export function Header({ categories }: { categories: Cat[] }) {
       {open && (
         <div className="fixed inset-0 z-[60] bg-bb-black md:hidden">
           <div className="flex h-16 items-center justify-between px-4">
-            <Wordmark spaced={false} className="text-lg" />
+            <Link href="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
+              <SkullMark className="h-7 w-6" />
+              <Wordmark spaced={false} className="text-lg" />
+            </Link>
             <button aria-label="Close menu" onClick={() => setOpen(false)}>
               <X />
             </button>

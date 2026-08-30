@@ -34,8 +34,10 @@ export function Hero({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
         >
-          <SkullMark className="mx-auto mb-6 h-12 w-10 text-bb-off" />
-          <Wordmark className="block text-5xl md:text-8xl" />
+          <div className="mb-6 flex flex-col items-center gap-4">
+            <SkullMark className="h-12 w-10 text-bb-off" />
+            <Wordmark className="block text-4xl md:text-7xl" spaced={false} />
+          </div>
           <p className="mt-4 font-display text-xl tracking-[0.42em] md:text-3xl">{subtitle}</p>
           <p className="mt-2 text-[11px] tracking-[0.4em] text-bb-off/70">{body}</p>
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
