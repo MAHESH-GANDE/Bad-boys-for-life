@@ -7,10 +7,10 @@ import { SkullMark, Wordmark } from "@/components/brand/mark";
 import { useCartDrawer } from "@/components/store/cart-drawer";
 
 const nav = [
+  { href: "/collections", label: "COLLECTIONS" },
   { href: "/collections/black", label: "BLACK" },
   { href: "/new-arrivals", label: "NEW IN" },
   { href: "/shop", label: "CLOTHING", mega: true },
-  { href: "/bestsellers", label: "BESTSELLERS" },
   { href: "/sale", label: "SALE" },
 ];
 
@@ -23,23 +23,25 @@ export function Header({ categories }: { categories: Cat[] }) {
 
   return (
     <header className="sticky top-0 z-50 border-b border-bb-off/15 bg-bb-black/95 backdrop-blur-sm">
-      <div className="mx-auto grid h-16 max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-3 px-4 md:h-[72px] md:flex md:justify-between">
-        <button
-          className="md:hidden"
-          aria-label="Open menu"
-          onClick={() => setOpen(true)}
-        >
-          <Menu className="h-5 w-5" />
-        </button>
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:h-[72px]">
+        <div className="flex min-w-0 flex-1 items-center gap-3 md:flex-none">
+          <button
+            className="md:hidden"
+            aria-label="Open menu"
+            onClick={() => setOpen(true)}
+          >
+            <Menu className="h-5 w-5" />
+          </button>
 
-        <Link
-          href="/"
-          className="flex items-center justify-center gap-2 md:justify-start md:gap-3"
-          aria-label="BADBOYS home"
-        >
-          <SkullMark className="h-7 w-6 shrink-0 text-bb-off md:h-8 md:w-7" />
-          <Wordmark className="text-sm md:text-lg" spaced={false} />
-        </Link>
+          <Link
+            href="/"
+            className="flex min-w-0 items-center gap-2 md:gap-3"
+            aria-label="BADBOYS home"
+          >
+            <SkullMark className="h-7 w-6 shrink-0 text-bb-off md:h-8 md:w-7" />
+            <Wordmark className="truncate text-sm md:text-lg" spaced={false} />
+          </Link>
+        </div>
 
         <nav className="hidden items-center gap-8 md:flex" onMouseLeave={() => setMega(false)}>
           {nav.map((item) => (
@@ -54,7 +56,7 @@ export function Header({ categories }: { categories: Cat[] }) {
           ))}
         </nav>
 
-        <div className="flex items-center justify-end gap-4">
+        <div className="flex shrink-0 items-center gap-4">
           <Link href="/search" aria-label="Search" className="hidden sm:block">
             <Search className="h-5 w-5" />
           </Link>
@@ -78,6 +80,22 @@ export function Header({ categories }: { categories: Cat[] }) {
         >
           <div className="mx-auto grid max-w-7xl grid-cols-3 gap-10 px-8 py-10">
             <div>
+              <p className="mb-4 text-[10px] tracking-[0.28em] text-bb-off/50">SHOP BY COLOUR</p>
+              <ul className="space-y-2 text-sm">
+                {[
+                  ["Black", "black"],
+                  ["Off-White", "off-white"],
+                  ["White", "white"],
+                  ["Blood", "blood"],
+                  ["Charcoal", "charcoal"],
+                ].map(([name, slug]) => (
+                  <li key={slug}>
+                    <Link href={`/collections/color/${slug}`}>{name}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
               <p className="mb-4 text-[10px] tracking-[0.28em] text-bb-off/50">CLOTHING</p>
               <ul className="space-y-2">
                 {categories.map((c) => (
@@ -100,19 +118,22 @@ export function Header({ categories }: { categories: Cat[] }) {
               </ul>
             </div>
             <div>
-              <p className="mb-4 text-[10px] tracking-[0.28em] text-bb-off/50">SHOP BY STYLE</p>
+              <p className="mb-4 text-[10px] tracking-[0.28em] text-bb-off/50">TREND COLLECTIONS</p>
               <ul className="space-y-2 text-sm">
                 <li>
+                  <Link href="/collections/new-drop">New Drop</Link>
+                </li>
+                <li>
                   <Link href="/collections/streetwear">Streetwear</Link>
+                </li>
+                <li>
+                  <Link href="/collections/limited-edition">Limited Edition</Link>
                 </li>
                 <li>
                   <Link href="/collections/essentials">Essentials</Link>
                 </li>
                 <li>
-                  <Link href="/shop?q=party">Party</Link>
-                </li>
-                <li>
-                  <Link href="/shop">Casual</Link>
+                  <Link href="/collections">All Collections</Link>
                 </li>
               </ul>
             </div>

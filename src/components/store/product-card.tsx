@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Heart } from "lucide-react";
 import { useState } from "react";
-import { discountPercent, formatInr } from "@/lib/utils";
+import { discountPercent, formatInr, slugify } from "@/lib/utils";
 import type { ProductCardData } from "@/lib/catalog";
 import { useToast } from "@/components/providers";
 import { useCartDrawer } from "@/components/store/cart-drawer";
@@ -82,18 +82,21 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           {Number(product.ratingCount) > 0 && (
             <p className="text-[11px] text-bb-off/50">★ {Number(product.ratingAvg).toFixed(1)}</p>
           )}
-          <div className="flex gap-1 pt-1">
-            {colours.map(([name, hex]) => (
-              <span
-                key={name}
-                title={name}
-                className="h-2.5 w-2.5 border border-bb-off/40"
-                style={{ background: hex }}
-              />
-            ))}
-          </div>
         </div>
       </Link>
+      <div className="mt-2 flex flex-wrap gap-1.5">
+        {colours.map(([name, hex]) => (
+          <Link
+            key={name}
+            href={`/collections/color/${slugify(name)}`}
+            title={name}
+            className="flex items-center gap-1.5 border border-bb-off/15 px-1.5 py-1 text-[9px] tracking-[0.12em] uppercase transition hover:border-bb-off/40"
+          >
+            <span className="h-3 w-3 shrink-0 border border-bb-off/40" style={{ background: hex }} />
+            <span className="text-bb-off/60">{name}</span>
+          </Link>
+        ))}
+      </div>
       <button
         aria-label="Save"
         onClick={wish}

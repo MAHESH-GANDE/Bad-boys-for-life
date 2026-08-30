@@ -3,30 +3,56 @@ import { listProducts } from "@/lib/catalog";
 import { ProductGrid } from "@/components/store/product-card";
 import { SkullMark, Wordmark } from "@/components/brand/mark";
 import { Hero } from "@/components/store/hero";
+import { PremiumCollectionGrid } from "@/components/store/premium-collection-card";
+import { ShopByColor } from "@/components/store/shop-by-color";
+import { trendCollections } from "@/lib/trend-collections";
 
 export default async function HomePage() {
   const black = await listProducts({ colour: ["Black"], sort: "bestselling" });
-  const blackNew = await listProducts({ colour: ["Black"], sort: "newest" });
+  const newest = await listProducts({ sort: "newest" });
+  const street = await listProducts({ collection: "streetwear", sort: "bestselling" });
 
   return (
     <div>
       <Hero
         title="BADBOYS"
         subtitle="FOR LIFE"
-        body="THE BLACK COLLECTION"
+        body="MENSWEAR · ALL COLOURS"
         image="/images/hero-menswear.jpg"
-        ctaLabel="SHOP BLACK"
-        ctaHref="/collections/black"
-        secondaryLabel="NEW IN BLACK"
-        secondaryHref="/collections/black?sort=newest"
+        ctaLabel="SHOP COLLECTIONS"
+        ctaHref="/collections"
+        secondaryLabel="SHOP BLACK"
+        secondaryHref="/collections/black"
       />
 
-      <section className="mx-auto max-w-7xl px-4 py-20">
+      <section className="mx-auto max-w-7xl px-4 py-16 md:py-20">
+        <div className="mb-8 flex items-end justify-between">
+          <div>
+            <p className="text-[10px] tracking-[0.32em] text-bb-off/50">CURATED DROPS</p>
+            <h2 className="mt-2 font-display text-3xl tracking-[0.16em] md:text-5xl">TREND COLLECTIONS</h2>
+          </div>
+          <Link href="/collections" className="hidden text-[10px] tracking-[0.22em] text-bb-off/50 hover:text-bb-off md:block">
+            VIEW ALL
+          </Link>
+        </div>
+        <PremiumCollectionGrid collections={trendCollections.slice(0, 5)} />
+      </section>
+
+      <ShopByColor />
+
+      <section className="mx-auto max-w-7xl px-4 py-16">
         <SectionHead title="THE BLACK COLLECTION" href="/collections/black" />
-        <p className="-mt-4 mb-10 max-w-xl text-sm text-bb-off/60">
-          Matte black. No noise. Tees, cargos, jackets — cut for the night and built to last.
-        </p>
-        <ProductGrid products={black.slice(0, 8)} />
+        <ProductGrid products={black.slice(0, 4)} />
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-16">
+        <SectionHead title="NEW DROP" href="/collections/new-drop" />
+        <ProductGrid products={newest.slice(0, 4)} />
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-16">
+        <SectionHead title="STREETWEAR" href="/collections/streetwear" />
+        <ProductGrid products={street.slice(0, 4)} />
       </section>
 
       <section className="border-y border-bb-off/15 py-24 text-center">
@@ -36,17 +62,9 @@ export default async function HomePage() {
         <p className="mt-4 font-display text-3xl tracking-[0.16em] text-bb-off/70 md:text-5xl">
           WE WEAR OUR OWN.
         </p>
-        <Link
-          href="/collections/black"
-          className="mt-10 inline-block bg-bb-off px-10 py-3 text-xs tracking-[0.28em] text-bb-black"
-        >
-          SHOP ALL BLACK
+        <Link href="/collections" className="mt-10 inline-block bg-bb-off px-10 py-3 text-xs tracking-[0.28em] text-bb-black">
+          EXPLORE ALL COLLECTIONS
         </Link>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 py-20">
-        <SectionHead title="NEW IN BLACK" href="/collections/black?sort=newest" />
-        <ProductGrid products={blackNew.slice(0, 4)} />
       </section>
     </div>
   );
