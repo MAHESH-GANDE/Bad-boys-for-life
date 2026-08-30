@@ -1,9 +1,17 @@
 import { getSessionUser } from "@/lib/auth";
-import { AccountHome } from "@/components/store/account-home";
+import { getAccountDashboard } from "@/lib/account";
+import { AccountDashboard } from "@/components/store/account-dashboard";
+import { AccountLogin } from "@/components/store/account-login";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
 export default async function AccountPage() {
-  const user = await getSessionUser();
-  return <AccountHome user={user ? { mobile: user.mobile, name: user.name, email: user.email } : null} />;
+  const session = await getSessionUser();
+  if (!session) return <AccountLogin />;
+
+  const data = await getAccountDashboard(session.id);
+  if (!data) redirect("/account");
+
+  return <AccountDashboard data={data} />;
 }
