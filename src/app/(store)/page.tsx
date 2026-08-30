@@ -17,7 +17,7 @@ export default async function HomePage() {
       <Hero
         title="BADBOYS"
         subtitle="FOR LIFE"
-        body="MENSWEAR · ALL COLOURS"
+        body="MENSWEAR"
         image="/images/hero-menswear.jpg"
         ctaLabel="SHOP COLLECTIONS"
         ctaHref="/collections"
