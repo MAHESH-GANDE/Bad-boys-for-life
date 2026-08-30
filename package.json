@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack --port 43123",
-    "build": "prisma db push && next build",
+    "build": "prisma db push --accept-data-loss --skip-generate && next build",
     "start": "next start --port 43123",
     "lint": "next lint",
     "test": "vitest run",
@@ -13,9 +13,6 @@
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "postinstall": "prisma generate"
-  },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@netlify/plugin-nextjs": "^5.15.13",

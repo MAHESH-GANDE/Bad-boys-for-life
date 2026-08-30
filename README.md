@@ -78,11 +78,17 @@ Payments are never marked paid from the browser alone. Mock Razorpay capture sti
 Production uses [Neon](https://neon.com) serverless PostgreSQL. Full setup: **[docs/neon-setup.md](docs/neon-setup.md)**.
 
 1. Create a Neon project and copy **pooled** and **direct** connection strings (both with `?sslmode=require`).
-2. Set environment variables on your host:
-   - `DATABASE_URL` — pooled URL (`…-pooler.….neon.tech`)
-   - `DIRECT_URL` — direct URL (non-pooler hostname)
-3. Push schema and seed: `npx prisma db push && npm run db:seed`
-4. Set `AUTH_SECRET`, Razorpay/Shiprocket keys, and `NEXT_PUBLIC_APP_URL`, then `npm run build && npm run start`.
+2. Set **required** environment variables on your host (e.g. Vercel → Project → Settings → Environment Variables):
+
+   | Variable | Value |
+   |----------|-------|
+   | `DATABASE_URL` | Neon pooled URL (`…-pooler.….neon.tech`) |
+   | `DIRECT_URL` | Neon direct URL (non-pooler hostname) |
+   | `AUTH_SECRET` | 32+ character random secret |
+   | `NEXT_PUBLIC_APP_URL` | Production URL, e.g. `https://your-app.vercel.app` |
+
+3. Deploy — `npm run build` syncs the Prisma schema via `DIRECT_URL`, then builds Next.js. Seed once after first deploy: `npm run db:seed`.
+4. Add Razorpay/Shiprocket keys and other integrations from `.env.example` as needed.
 
 For local development, keep both URLs pointed at `localhost` (see `.env.example`).
 

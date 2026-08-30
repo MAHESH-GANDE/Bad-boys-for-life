@@ -92,13 +92,20 @@ Open [http://localhost:43123](http://localhost:43123).
 
 When deploying (Vercel, Railway, Netlify, etc.):
 
-1. Add `DATABASE_URL` (pooled) and `DIRECT_URL` (direct) to the host's environment variables.
-2. Run migrations or push schema against production once:
-   ```bash
-   npx prisma db push
-   # or, if you adopt migrations later:
-   npx prisma migrate deploy
-   ```
+1. Add these **required** environment variables to the host (Project → Settings → Environment Variables on Vercel):
+
+   | Variable | Description |
+   |----------|-------------|
+   | `DATABASE_URL` | Neon **pooled** connection string (`…-pooler.….neon.tech?sslmode=require`) |
+   | `DIRECT_URL` | Neon **direct** connection string (non-pooler hostname, `?sslmode=require`) |
+   | `AUTH_SECRET` | Random secret, minimum 32 characters (session signing) |
+   | `NEXT_PUBLIC_APP_URL` | Public site URL, e.g. `https://your-app.vercel.app` |
+
+   Optional but recommended: `ADMIN_SEED_PASSWORD`, Razorpay/Shiprocket keys (see `.env.example`).
+
+   > **Vercel build note:** `npm run build` runs `prisma db push` against `DIRECT_URL` to sync the schema before `next build`. The build **will fail** with `Environment variable not found: DIRECT_URL` if either database URL is missing.
+
+2. Schema sync runs automatically on each deploy via the build script (`prisma db push --accept-data-loss --skip-generate && next build`). No manual migration step needed unless you adopt Prisma Migrate later.
 3. Seed only on first deploy (or use a dedicated admin-setup script):
    ```bash
    npm run db:seed
