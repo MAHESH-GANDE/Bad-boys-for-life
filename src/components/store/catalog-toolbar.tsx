@@ -1,7 +1,8 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { brandColors } from "@/lib/colors";
+import { shopFitFilters } from "@/lib/fits";
 
 const sorts = [
   ["recommended", "Recommended"],
@@ -12,25 +13,49 @@ const sorts = [
   ["rating", "Rating"],
 ] as const;
 
-const fits = ["Boxy", "Relaxed", "Cuban", "Overshirt", "Baggy", "Straight", "Pleated", "Parachute", "Minimal", "Oversized", "Resort"];
-
 export function CatalogToolbar({ count }: { count: number }) {
   const router = useRouter();
+  const pathname = usePathname();
   const params = useSearchParams();
   const sort = params.get("sort") || "recommended";
+
+  function pushParams(next: URLSearchParams) {
+    const qs = next.toString();
+    router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    router.refresh();
+  }
 
   function setSort(value: string) {
     const next = new URLSearchParams(params.toString());
     next.set("sort", value);
-    router.push(`?${next.toString()}`);
+    pushParams(next);
   }
 
   function setFilter(key: string, value: string) {
     const next = new URLSearchParams(params.toString());
+
+    if (key === "colour") {
+      next.delete("colour");
+      if (value) {
+        router.push(`/collections/color/${value}${next.size ? `?${next.toString()}` : ""}`, { scroll: false });
+        router.refresh();
+        return;
+      }
+      router.push(next.size ? `/shop?${next.toString()}` : "/shop", { scroll: false });
+      router.refresh();
+      return;
+    }
+
     if (value) next.set(key, value);
     else next.delete(key);
-    router.push(`?${next.toString()}`);
+    pushParams(next);
   }
+
+  const activeColour =
+    params.get("colour") ||
+    (pathname.startsWith("/collections/color/")
+      ? pathname.replace("/collections/color/", "").split("/")[0]
+      : "");
 
   return (
     <div className="my-8 flex flex-col gap-4 border-y border-bb-off/15 py-4 md:flex-row md:items-center md:justify-between">
@@ -40,6 +65,7 @@ export function CatalogToolbar({ count }: { count: number }) {
           className="border border-bb-off/20 bg-bb-black px-3 py-2"
           value={params.get("size") || ""}
           onChange={(e) => setFilter("size", e.target.value)}
+          aria-label="Filter by size"
         >
           <option value="">Size</option>
           {["S", "M", "L", "XL", "XXL"].map((s) => (
@@ -50,8 +76,9 @@ export function CatalogToolbar({ count }: { count: number }) {
         </select>
         <select
           className="border border-bb-off/20 bg-bb-black px-3 py-2"
-          value={params.get("colour") || ""}
+          value={activeColour}
           onChange={(e) => setFilter("colour", e.target.value)}
+          aria-label="Filter by colour"
         >
           <option value="">Colour</option>
           {brandColors.map((c) => (
@@ -64,9 +91,10 @@ export function CatalogToolbar({ count }: { count: number }) {
           className="border border-bb-off/20 bg-bb-black px-3 py-2"
           value={params.get("fit") || ""}
           onChange={(e) => setFilter("fit", e.target.value)}
+          aria-label="Filter by fit"
         >
           <option value="">Fit</option>
-          {fits.map((s) => (
+          {shopFitFilters.map((s) => (
             <option key={s} value={s}>
               {s}
             </option>
@@ -76,6 +104,7 @@ export function CatalogToolbar({ count }: { count: number }) {
           className="border border-bb-off/20 bg-bb-black px-3 py-2"
           value={sort}
           onChange={(e) => setSort(e.target.value)}
+          aria-label="Sort products"
         >
           {sorts.map(([v, l]) => (
             <option key={v} value={v}>

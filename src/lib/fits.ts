@@ -19,3 +19,19 @@ export const fitModels: FitModel[] = [
   { name: "Co-ord Set", slug: "coord", category: "Sets", details: "Waffle knit matching top & bottom.", href: "/category/co-ords" },
   { name: "Minimal Hoodie", slug: "minimal-hoodie", category: "Hoodies", details: "French terry, clean drop shoulder.", href: "/shop?fit=Minimal" },
 ];
+
+/** Fit values used in catalog filters — keep in sync with product.fit in the DB. */
+export const shopFitFilters = [
+  "Boxy",
+  "Relaxed",
+  "Regular",
+  "Cuban",
+  "Overshirt",
+  "Baggy",
+  "Straight",
+  "Pleated",
+  "Parachute",
+  "Minimal",
+  "Oversized",
+  "Resort",
+] as const;

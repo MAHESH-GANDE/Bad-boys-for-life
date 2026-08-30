@@ -2,6 +2,7 @@ import { listProducts } from "@/lib/catalog";
 import type { SearchFilters } from "@/lib/search";
 import { ProductGrid } from "@/components/store/product-card";
 import { CatalogToolbar } from "@/components/store/catalog-toolbar";
+import { Suspense } from "react";
 
 export async function CatalogListing({
   title,
@@ -22,7 +23,9 @@ export async function CatalogListing({
           Showing each piece in <span className="text-bb-off">{highlightColour}</span> — tap a swatch on any product to switch shade.
         </p>
       )}
-      <CatalogToolbar count={products.length} />
+      <Suspense fallback={<div className="my-8 border-y border-bb-off/15 py-4 text-xs text-bb-off/40">Loading filters…</div>}>
+        <CatalogToolbar count={products.length} />
+      </Suspense>
       {products.length === 0 ? (
         <div className="py-24 text-center">
           <p className="font-display text-4xl tracking-[0.12em]">NO RESULTS.</p>

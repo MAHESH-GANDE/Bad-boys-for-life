@@ -8,6 +8,7 @@ import { discountPercent, formatInr } from "@/lib/utils";
 import { sortColourEntries, colorTextClass, isLightColor, colourMetaByName, colourTintOpacity } from "@/lib/colors";
 import { colourSlugFromName, productImageForColour } from "@/lib/product-colours";
 import type { ProductCardData } from "@/lib/catalog";
+import { toggleGuestWishlist } from "@/lib/guest-wishlist";
 import { useToast } from "@/components/providers";
 import { useCartDrawer } from "@/components/store/cart-drawer";
 
@@ -86,8 +87,13 @@ export function ProductCard({
       body: JSON.stringify({ productId: product.id }),
     });
     const data = await res.json();
+    if (res.status === 401) {
+      const added = toggleGuestWishlist(product.id);
+      toast.push(added ? "SAVED LOCALLY · LOGIN TO SYNC" : "REMOVED");
+      return;
+    }
     if (!res.ok) {
-      toast.push(data.error || "Sign in to save.");
+      toast.push(data.error || "Could not save.");
       return;
     }
     toast.push("SAVED");

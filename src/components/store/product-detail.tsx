@@ -3,12 +3,14 @@
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Heart } from "lucide-react";
 import { formatInr, discountPercent } from "@/lib/utils";
 import { useToast } from "@/components/providers";
 import { useCartDrawer } from "@/components/store/cart-drawer";
 import { SizeGuideModal } from "@/components/store/size-guide-modal";
 import { colourSlugFromName, productImageForColour, resolveProductColour } from "@/lib/product-colours";
 import { sortColourEntries, colourMetaByName, colourTintOpacity } from "@/lib/colors";
+import { isGuestWishlisted, toggleGuestWishlist } from "@/lib/guest-wishlist";
 import type { ProductCardData } from "@/lib/catalog";
 
 export function ProductDetail({
@@ -36,6 +38,7 @@ export function ProductDetail({
   const [pin, setPin] = useState("");
   const [eta, setEta] = useState<string | null>(null);
   const [idx, setIdx] = useState(0);
+  const [saved, setSaved] = useState(false);
   const toast = useToast();
   const cart = useCartDrawer();
 
@@ -96,6 +99,36 @@ export function ProductDetail({
     else cart.setOpen(true);
   }
 
+  useEffect(() => {
+    setSaved(isGuestWishlisted(product.id));
+  }, [product.id]);
+
+  async function toggleWishlist() {
+    const res = await fetch("/api/wishlist", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productId: product.id, variantId: variant?.id }),
+    });
+    const data = await res.json();
+    if (res.status === 401) {
+      const added = toggleGuestWishlist(product.id);
+      setSaved(added);
+      toast.push(added ? "SAVED LOCALLY · LOGIN TO SYNC" : "REMOVED");
+      return;
+    }
+    if (!res.ok) {
+      toast.push(data.error || "Could not save.");
+      return;
+    }
+    setSaved(true);
+    toast.push("SAVED TO WISHLIST");
+  }
+
+  function openSizeGuide() {
+    if (sizeGuide) setGuide(true);
+    else toast.push("SIZE GUIDE LOADING — TRY AGAIN");
+  }
+
   async function checkPin() {
     const res = await fetch(`/api/pincode?pincode=${pin}`);
     const data = await res.json();
@@ -141,7 +174,17 @@ export function ProductDetail({
       </div>
 
       <div className="pb-28 md:pb-0">
-        <h1 className="font-display text-4xl tracking-[0.08em] md:text-5xl">{product.name}</h1>
+        <div className="flex items-start justify-between gap-4">
+          <h1 className="font-display text-4xl tracking-[0.08em] md:text-5xl">{product.name}</h1>
+          <button
+            type="button"
+            aria-label={saved ? "Remove from wishlist" : "Save to wishlist"}
+            onClick={toggleWishlist}
+            className={`shrink-0 border p-3 transition ${saved ? "border-bb-red bg-bb-red/10 text-bb-red" : "border-bb-off/30 text-bb-off"}`}
+          >
+            <Heart className={`h-5 w-5 ${saved ? "fill-current" : ""}`} />
+          </button>
+        </div>
         {product.ratingCount > 0 && (
           <p className="mt-2 text-sm text-bb-off/60">
             ★ {Number(product.ratingAvg).toFixed(1)} · {product.ratingCount} reviews
@@ -183,24 +226,31 @@ export function ProductDetail({
         <div className="mt-8">
           <div className="flex justify-between text-[10px] tracking-[0.22em] text-bb-off/50">
             <span>SIZE</span>
-            <button onClick={() => setGuide(true)}>SIZE GUIDE</button>
+            <button type="button" onClick={openSizeGuide}>
+              SIZE GUIDE
+            </button>
           </div>
           <div className="mt-3 flex flex-wrap gap-2">
-            {sizes.map((v) => {
-              const avail = v.inventory?.available ?? 0;
-              return (
-                <button
-                  key={v.id}
-                  disabled={avail <= 0}
-                  onClick={() => setSize(v.size)}
-                  className={`min-w-12 border px-3 py-2 text-sm ${
-                    size === v.size ? "border-bb-off bg-bb-off text-bb-black" : "border-bb-off/30"
-                  } ${avail <= 0 ? "opacity-30" : ""}`}
-                >
-                  {v.size}
-                </button>
-              );
-            })}
+            {sizes.length === 0 ? (
+              <p className="text-xs text-bb-off/50">Pick a colour to see sizes.</p>
+            ) : (
+              sizes.map((v) => {
+                const avail = v.inventory?.available ?? 0;
+                return (
+                  <button
+                    key={v.id}
+                    type="button"
+                    disabled={avail <= 0}
+                    onClick={() => setSize(v.size)}
+                    className={`min-w-12 border px-3 py-2 text-sm ${
+                      size === v.size ? "border-bb-off bg-bb-off text-bb-black" : "border-bb-off/30"
+                    } ${avail <= 0 ? "opacity-30" : ""}`}
+                  >
+                    {v.size}
+                  </button>
+                );
+              })
+            )}
           </div>
           {variant && stock > 0 && stock <= (variant.inventory?.lowStockAt ?? 5) && (
             <p className="mt-2 text-xs text-bb-red">Only {stock} left</p>
