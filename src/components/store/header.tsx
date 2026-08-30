@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { Search, Heart, User, ShoppingBag, Menu, X } from "lucide-react";
 import { SkullMark, Wordmark } from "@/components/brand/mark";
-import { brandColors } from "@/lib/colors";
+import { colorTiers, colorsByTier } from "@/lib/colors";
+import { fitModels } from "@/lib/fits";
 import { useCartDrawer } from "@/components/store/cart-drawer";
 
 const nav = [
@@ -79,16 +80,27 @@ export function Header({ categories }: { categories: Cat[] }) {
           onMouseEnter={() => setMega(true)}
           onMouseLeave={() => setMega(false)}
         >
-          <div className="mx-auto grid max-w-7xl grid-cols-3 gap-10 px-8 py-10">
+          <div className="mx-auto grid max-w-7xl grid-cols-2 gap-10 px-8 py-10 lg:grid-cols-4">
             <div>
-              <p className="mb-4 text-[10px] tracking-[0.28em] text-bb-off/50">COLOUR COLLECTIONS</p>
-              <ul className="space-y-2 text-sm">
+              <p className="mb-4 text-[10px] tracking-[0.28em] text-bb-off/50">COLOUR TIERS</p>
+              <ul className="space-y-4 text-sm">
                 <li>
-                  <Link href="/collections/colours">All colours</Link>
+                  <Link href="/collections/colours" className="text-bb-off/80 hover:text-bb-off">
+                    All colours
+                  </Link>
                 </li>
-                {brandColors.map((color) => (
-                  <li key={color.slug}>
-                    <Link href={`/collections/color/${color.slug}`}>{color.name}</Link>
+                {colorTiers.map((tier) => (
+                  <li key={tier.id}>
+                    <p className="text-[9px] tracking-[0.2em] text-bb-off/40">{tier.label} · {tier.share}</p>
+                    <ul className="mt-2 space-y-1.5">
+                      {colorsByTier(tier.id).slice(0, 4).map((color) => (
+                        <li key={color.slug}>
+                          <Link href={`/collections/color/${color.slug}`} className="hover:text-bb-off">
+                            {color.name}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
                   </li>
                 ))}
               </ul>
@@ -98,7 +110,7 @@ export function Header({ categories }: { categories: Cat[] }) {
               <ul className="space-y-2">
                 {categories.map((c) => (
                   <li key={c.slug}>
-                    <Link href={`/category/${c.slug}`} className="text-sm hover:text-white">
+                    <Link href={`/category/${c.slug}`} className="text-sm hover:text-bb-off">
                       {c.name}
                     </Link>
                   </li>
@@ -108,9 +120,9 @@ export function Header({ categories }: { categories: Cat[] }) {
             <div>
               <p className="mb-4 text-[10px] tracking-[0.28em] text-bb-off/50">SHOP BY FIT</p>
               <ul className="space-y-2 text-sm">
-                {["Oversized", "Regular", "Relaxed", "Slim"].map((f) => (
-                  <li key={f}>
-                    <Link href={`/shop?fit=${f}`}>{f}</Link>
+                {fitModels.slice(0, 8).map((fit) => (
+                  <li key={fit.slug}>
+                    <Link href={fit.href}>{fit.name}</Link>
                   </li>
                 ))}
               </ul>

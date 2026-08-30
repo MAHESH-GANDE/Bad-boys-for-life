@@ -1,33 +1,12 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { defaultSiteConfig } from "../src/lib/settings";
+import { catalogProducts } from "./catalog-seed";
 
 const prisma = new PrismaClient();
 
 const SIZES = ["S", "M", "L", "XL", "XXL"] as const;
 
-type SeedProduct = {
-  name: string;
-  slug: string;
-  sku: string;
-  category: string;
-  collections: string[];
-  description: string;
-  shortDescription: string;
-  fit: string;
-  fabric: string;
-  pattern: string;
-  neck?: string;
-  sleeve?: string;
-  care: string;
-  colours: { name: string; hex: string; images: { url: string; kind: string; alt: string }[] }[];
-  price: number;
-  mrp: number;
-  isNew?: boolean;
-  isBestseller?: boolean;
-  isLimited?: boolean;
-  stock?: number;
-};
 
 async function main() {
   await prisma.couponUsage.deleteMany();
@@ -71,6 +50,7 @@ async function main() {
     [
       ["T-Shirts", "t-shirts"],
       ["Shirts", "shirts"],
+      ["Polos", "polos"],
       ["Jeans", "jeans"],
       ["Trousers", "trousers"],
       ["Cargos", "cargos"],
@@ -107,346 +87,7 @@ async function main() {
   );
   const col = Object.fromEntries(collections.map((c) => [c.slug, c]));
 
-  const products: SeedProduct[] = [
-    {
-      name: "BADBOYS Oversized Tee",
-      slug: "black-oversized-tee",
-      sku: "BB-TEE-OS-001",
-      category: "t-shirts",
-      collections: ["new-drop", "streetwear", "best-sellers"],
-      shortDescription: "Heavyweight cotton. Cut to hang.",
-      description:
-        "A 240 GSM oversized tee with dropped shoulders and a set-in neck that sits clean. Built for night streets and long days. We don't follow. We wear our own.",
-      fit: "Oversized",
-      fabric: "240 GSM cotton",
-      pattern: "Solid",
-      neck: "Crew",
-      sleeve: "Short",
-      care: "Machine wash cold. Do not bleach. Dry in shade.",
-      colours: [
-        {
-          name: "Black",
-          hex: "#111111",
-          images: [
-            { url: "/images/product-oversized-tee.jpg", kind: "front", alt: "Black oversized tee front" },
-            { url: "/images/product-oversized-tee.jpg", kind: "back", alt: "Black oversized tee back" },
-          ],
-        },
-        {
-          name: "Off-White",
-          hex: "#F4F1EA",
-          images: [{ url: "/images/product-white-tee.jpg", kind: "front", alt: "Off-white oversized tee" }],
-        },
-      ],
-      price: 1299,
-      mrp: 1999,
-      isNew: true,
-      isBestseller: true,
-    },
-    {
-      name: "BADBOYS Signature Tee",
-      slug: "signature-tee",
-      sku: "BB-TEE-SIG-002",
-      category: "t-shirts",
-      collections: ["essentials", "best-sellers"],
-      shortDescription: "The daily uniform.",
-      description: "Regular-meets-relaxed signature tee. Dense cotton, clean hem, no noise.",
-      fit: "Regular",
-      fabric: "220 GSM cotton",
-      pattern: "Solid",
-      neck: "Crew",
-      sleeve: "Short",
-      care: "Machine wash cold.",
-      colours: [
-        { name: "Black", hex: "#111111", images: [{ url: "/images/product-oversized-tee.jpg", kind: "front", alt: "Signature tee black" }] },
-        { name: "White", hex: "#FFFFFF", images: [{ url: "/images/product-white-tee.jpg", kind: "front", alt: "Signature tee white" }] },
-      ],
-      price: 999,
-      mrp: 1499,
-      isBestseller: true,
-    },
-    {
-      name: "BADBOYS Skull Tee",
-      slug: "skull-tee",
-      sku: "BB-TEE-SKL-003",
-      category: "t-shirts",
-      collections: ["limited-edition", "streetwear", "new-drop"],
-      shortDescription: "The mark. Worn.",
-      description: "Limited skull mark printed on heavyweight black. Embroidery-grade graphic, not a sticker.",
-      fit: "Oversized",
-      fabric: "240 GSM cotton",
-      pattern: "Graphic",
-      neck: "Crew",
-      sleeve: "Short",
-      care: "Turn inside out. Cold wash.",
-      colours: [
-        { name: "Black", hex: "#111111", images: [{ url: "/images/product-oversized-tee.jpg", kind: "front", alt: "Skull tee" }] },
-        { name: "Blood", hex: "#8B1E1E", images: [{ url: "/images/product-red-tee.jpg", kind: "front", alt: "Skull tee red" }] },
-      ],
-      price: 1599,
-      mrp: 2299,
-      isLimited: true,
-      isNew: true,
-    },
-    {
-      name: "BADBOYS Essential Tee",
-      slug: "essential-tee",
-      sku: "BB-TEE-ESS-004",
-      category: "t-shirts",
-      collections: ["essentials", "summer", "sale"],
-      shortDescription: "No graphics. No excuses.",
-      description: "Slim-not-skinny essential. Sits close at the shoulder, easy through the body.",
-      fit: "Slim",
-      fabric: "180 GSM cotton",
-      pattern: "Solid",
-      neck: "Crew",
-      sleeve: "Short",
-      care: "Machine wash.",
-      colours: [
-        { name: "Black", hex: "#111111", images: [{ url: "/images/product-oversized-tee.jpg", kind: "front", alt: "Essential tee" }] },
-      ],
-      price: 799,
-      mrp: 1299,
-    },
-    {
-      name: "BADBOYS Black Cargo",
-      slug: "black-cargo",
-      sku: "BB-BTM-CRG-005",
-      category: "cargos",
-      collections: ["streetwear", "best-sellers", "new-drop"],
-      shortDescription: "Utility without costume.",
-      description: "Six-pocket cargo in matte black cotton twill. Tapered from the knee. Built to move.",
-      fit: "Relaxed",
-      fabric: "Cotton twill",
-      pattern: "Solid",
-      care: "Machine wash. Warm iron.",
-      colours: [
-        { name: "Black", hex: "#111111", images: [{ url: "/images/product-cargo.jpg", kind: "front", alt: "Black cargo" }] },
-      ],
-      price: 2499,
-      mrp: 3499,
-      isBestseller: true,
-      isNew: true,
-    },
-    {
-      name: "BADBOYS Parachute Cargo",
-      slug: "parachute-cargo",
-      sku: "BB-BTM-PAR-006",
-      category: "cargos",
-      collections: ["streetwear", "limited-edition"],
-      shortDescription: "Volume. Drawcords. Night.",
-      description: "Parachute nylon cargo with dual drawcords and articulated knee. Loud silhouette, quiet colour.",
-      fit: "Relaxed",
-      fabric: "Nylon parachute",
-      pattern: "Solid",
-      care: "Gentle wash.",
-      colours: [
-        { name: "Black", hex: "#111111", images: [{ url: "/images/product-parachute.jpg", kind: "front", alt: "Parachute cargo" }] },
-      ],
-      price: 2799,
-      mrp: 3999,
-      isLimited: true,
-    },
-    {
-      name: "BADBOYS Relaxed Trouser",
-      slug: "relaxed-trouser",
-      sku: "BB-BTM-TRS-007",
-      category: "trousers",
-      collections: ["essentials", "summer"],
-      shortDescription: "Tailored ease.",
-      description: "Relaxed pleat-free trouser with a clean crease and deep pockets.",
-      fit: "Relaxed",
-      fabric: "Poly-viscose",
-      pattern: "Solid",
-      care: "Dry clean preferred.",
-      colours: [
-        { name: "Charcoal", hex: "#2B2B2B", images: [{ url: "/images/product-trouser.jpg", kind: "front", alt: "Relaxed trouser" }] },
-      ],
-      price: 2299,
-      mrp: 3299,
-    },
-    {
-      name: "BADBOYS Denim",
-      slug: "denim",
-      sku: "BB-BTM-DNM-008",
-      category: "jeans",
-      collections: ["essentials", "best-sellers"],
-      shortDescription: "Black denim. No wash tricks.",
-      description: "14 oz black denim, straight through the thigh, slight taper. Raw enough to age with you.",
-      fit: "Regular",
-      fabric: "14oz denim",
-      pattern: "Solid",
-      care: "Wash inside out. Rarely.",
-      colours: [
-        { name: "Black", hex: "#111111", images: [{ url: "/images/product-denim.jpg", kind: "front", alt: "Black denim" }] },
-      ],
-      price: 2699,
-      mrp: 3799,
-      isBestseller: true,
-    },
-    {
-      name: "BADBOYS Street Shirt",
-      slug: "street-shirt",
-      sku: "BB-TOP-SHT-009",
-      category: "shirts",
-      collections: ["streetwear", "new-drop"],
-      shortDescription: "Boxy. Buttoned. Dark.",
-      description: "Cuban-adjacent street shirt with an open collar and short sleeve. Worn untucked.",
-      fit: "Oversized",
-      fabric: "Viscose blend",
-      pattern: "Solid",
-      neck: "Open collar",
-      sleeve: "Short",
-      care: "Gentle wash.",
-      colours: [
-        { name: "Black", hex: "#111111", images: [{ url: "/images/product-shirt.jpg", kind: "front", alt: "Street shirt" }] },
-      ],
-      price: 1899,
-      mrp: 2699,
-      isNew: true,
-    },
-    {
-      name: "BADBOYS Relaxed Shirt",
-      slug: "relaxed-shirt",
-      sku: "BB-TOP-SHT-010",
-      category: "shirts",
-      collections: ["essentials", "summer"],
-      shortDescription: "Long sleeve. Loose chest.",
-      description: "Relaxed long-sleeve shirt with a hidden button-down and curved hem.",
-      fit: "Relaxed",
-      fabric: "Cotton poplin",
-      pattern: "Solid",
-      neck: "Point collar",
-      sleeve: "Long",
-      care: "Machine wash.",
-      colours: [
-        { name: "Black", hex: "#111111", images: [{ url: "/images/product-shirt.jpg", kind: "front", alt: "Relaxed shirt" }] },
-      ],
-      price: 1999,
-      mrp: 2899,
-    },
-    {
-      name: "BADBOYS Varsity Jacket",
-      slug: "varsity-jacket",
-      sku: "BB-OUT-VAR-011",
-      category: "jackets",
-      collections: ["winter", "limited-edition", "best-sellers"],
-      shortDescription: "Letterman, stripped of the letter.",
-      description: "Wool-blend body, leather-look sleeves, rib collar. No college. No mascot. Ours.",
-      fit: "Regular",
-      fabric: "Wool blend / faux leather",
-      pattern: "Colourblock",
-      sleeve: "Long",
-      care: "Dry clean.",
-      colours: [
-        { name: "Black", hex: "#111111", images: [{ url: "/images/product-varsity.jpg", kind: "front", alt: "Varsity jacket" }] },
-      ],
-      price: 4999,
-      mrp: 6999,
-      isLimited: true,
-      isBestseller: true,
-    },
-    {
-      name: "BADBOYS Bomber",
-      slug: "bomber",
-      sku: "BB-OUT-BMB-012",
-      category: "jackets",
-      collections: ["winter", "streetwear"],
-      shortDescription: "Flight jacket. Grounded.",
-      description: "Satin bomber with rib hem, two-way zip, and interior pocket.",
-      fit: "Regular",
-      fabric: "Satin nylon",
-      pattern: "Solid",
-      sleeve: "Long",
-      care: "Gentle wash.",
-      colours: [
-        { name: "Black", hex: "#111111", images: [{ url: "/images/product-bomber.jpg", kind: "front", alt: "Bomber jacket" }] },
-      ],
-      price: 3999,
-      mrp: 5499,
-    },
-    {
-      name: "BADBOYS Denim Jacket",
-      slug: "denim-jacket",
-      sku: "BB-OUT-DNM-013",
-      category: "jackets",
-      collections: ["essentials", "winter"],
-      shortDescription: "Trucker. Blacked out.",
-      description: "Classic trucker bones, black denim, matte hardware.",
-      fit: "Regular",
-      fabric: "12oz denim",
-      pattern: "Solid",
-      sleeve: "Long",
-      care: "Wash inside out.",
-      colours: [
-        { name: "Black", hex: "#111111", images: [{ url: "/images/product-denim-jacket.jpg", kind: "front", alt: "Denim jacket" }] },
-      ],
-      price: 3499,
-      mrp: 4799,
-    },
-    {
-      name: "BADBOYS Hoodie",
-      slug: "hoodie",
-      sku: "BB-TOP-HOD-014",
-      category: "hoodies",
-      collections: ["winter", "essentials", "best-sellers"],
-      shortDescription: "Fleece that means it.",
-      description: "450 GSM fleece hoodie. Kangaroo pocket. Heavy drawcord. Oversized hood.",
-      fit: "Oversized",
-      fabric: "450 GSM fleece",
-      pattern: "Solid",
-      neck: "Hood",
-      sleeve: "Long",
-      care: "Wash cold. Do not iron print.",
-      colours: [
-        { name: "Black", hex: "#111111", images: [{ url: "/images/product-hoodie.jpg", kind: "front", alt: "Hoodie" }] },
-      ],
-      price: 2799,
-      mrp: 3799,
-      isBestseller: true,
-    },
-    {
-      name: "BADBOYS Co-ord Set",
-      slug: "co-ord-set",
-      sku: "BB-SET-CRD-015",
-      category: "co-ords",
-      collections: ["new-drop", "streetwear", "limited-edition"],
-      shortDescription: "The full look. One decision.",
-      description: "Matching relaxed shirt and trouser in a matte black viscose blend. Shop the night.",
-      fit: "Relaxed",
-      fabric: "Viscose blend",
-      pattern: "Solid",
-      sleeve: "Long",
-      care: "Gentle wash as a set.",
-      colours: [
-        { name: "Black", hex: "#111111", images: [{ url: "/images/product-coord.jpg", kind: "front", alt: "Co-ord set" }] },
-      ],
-      price: 4499,
-      mrp: 5999,
-      isNew: true,
-      isLimited: true,
-    },
-    {
-      name: "BADBOYS Sweatshirt",
-      slug: "sweatshirt",
-      sku: "BB-TOP-SWT-016",
-      category: "sweatshirts",
-      collections: ["winter", "essentials"],
-      shortDescription: "Crew. Dense. Dark.",
-      description: "Set-in sleeve sweatshirt in 400 GSM fleece. Rib at cuff and hem.",
-      fit: "Oversized",
-      fabric: "400 GSM fleece",
-      pattern: "Solid",
-      neck: "Crew",
-      sleeve: "Long",
-      care: "Wash cold.",
-      colours: [
-        { name: "Black", hex: "#111111", images: [{ url: "/images/product-hoodie.jpg", kind: "front", alt: "Sweatshirt" }] },
-      ],
-      price: 2299,
-      mrp: 3199,
-    },
-  ];
+  const products = catalogProducts;
 
   for (const p of products) {
     const created = await prisma.product.create({
@@ -517,7 +158,7 @@ async function main() {
   }
 
   const lookProducts = await prisma.product.findMany({
-    where: { slug: { in: ["black-oversized-tee", "black-cargo", "bomber"] } },
+    where: { slug: { in: ["boxy-heavyweight-tee", "parachute-utility-cargo", "matte-bomber"] } },
   });
   const look = await prisma.look.create({
     data: {
@@ -548,7 +189,7 @@ async function main() {
         key: "brand-statement",
         title: "WE DON'T FOLLOW.",
         subtitle: "WE WEAR OUR OWN.",
-        body: "Premium contemporary menswear. Cut in the dark. Worn in the city.",
+        body: "Premium contemporary menswear. Muted tones. Relaxed cuts. Worn in the city.",
         sortOrder: 1,
       },
       {

@@ -12,7 +12,7 @@ export async function CatalogListing({
 }) {
   const products = await listProducts(filters);
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 pb-24">
+    <div className="mx-auto max-w-7xl px-4 py-10 pb-8 md:pb-12">
       <p className="text-[10px] tracking-[0.28em] text-bb-off/50">MENSWEAR</p>
       <h1 className="mt-2 font-display text-4xl tracking-[0.16em] md:text-6xl">{title}</h1>
       <CatalogToolbar count={products.length} />

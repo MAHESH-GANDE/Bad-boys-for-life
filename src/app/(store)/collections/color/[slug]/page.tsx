@@ -1,8 +1,8 @@
 import { CatalogListing } from "@/components/store/catalog-listing";
 import { parseCatalogParams } from "@/lib/search";
-import { brandColors, colorFilterName } from "@/lib/colors";
+import { brandColors, colorFilterName, resolveColorSlug } from "@/lib/colors";
 import { ColorCollectionHero } from "@/components/store/color-collection-hero";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 
 export default async function ColorCollectionPage({
@@ -13,7 +13,11 @@ export default async function ColorCollectionPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { slug } = await params;
-  const color = brandColors.find((c) => c.slug === slug);
+  const resolved = resolveColorSlug(slug);
+  if (resolved !== slug) {
+    redirect(`/collections/color/${resolved}`);
+  }
+  const color = brandColors.find((c) => c.slug === resolved);
   if (!color) notFound();
   const filters = parseCatalogParams(await searchParams);
   return (
@@ -21,7 +25,7 @@ export default async function ColorCollectionPage({
       <ColorCollectionHero color={color} />
       <CatalogListing
         title={`${color.name.toUpperCase()} EDIT`}
-        filters={{ ...filters, colour: [colorFilterName(slug)] }}
+        filters={{ ...filters, colour: [colorFilterName(resolved)] }}
       />
     </Suspense>
   );

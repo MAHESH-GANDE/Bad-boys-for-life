@@ -18,7 +18,7 @@ export default async function StoreLayout({ children }: { children: React.ReactN
         </Link>
         <AnnouncementBar text={config.announcement} href={config.announcementHref} active={config.announcementActive} />
         <Header categories={categories} />
-        <main id="main">{children}</main>
+        <main id="main" className="pb-28 md:pb-0">{children}</main>
         <Footer config={config} />
         <MobileTabBar />
       </div>

@@ -11,7 +11,12 @@ export default async function ShopPage({
   const sp = await searchParams;
   const filters = parseCatalogParams(sp);
   const colour = filters.colour?.[0];
-  const title = colour ? `${colour.toUpperCase()}` : "ALL PRODUCTS";
+  const fit = filters.fit?.[0];
+  const title = fit
+    ? `${fit.toUpperCase()} FIT`
+    : colour
+      ? `${colour.toUpperCase()}`
+      : "ALL PRODUCTS";
   return (
     <Suspense>
       <ColorFilterBar compact />
