@@ -1,6 +1,17 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { requestOtp, verifyOtp, logoutCustomer } from "@/lib/auth";
 import { clientKey, rateLimit } from "@/lib/security";
+
+function apiError(error: unknown, status = 400) {
+  if (error instanceof z.ZodError) {
+    return NextResponse.json({ error: error.issues[0]?.message || "Invalid input." }, { status });
+  }
+  if (error instanceof Error) {
+    return NextResponse.json({ error: error.message }, { status });
+  }
+  return NextResponse.json({ error: "Something went wrong." }, { status });
+}
 
 export async function POST(req: Request) {
   const { mobile, action, code } = (await req.json()) as {
@@ -14,7 +25,7 @@ export async function POST(req: Request) {
   }
   const key = await clientKey("otp");
   const rl = rateLimit(key, 8, 60_000);
-  if (!rl.ok) return NextResponse.json({ error: "Slow down." }, { status: 429 });
+  if (!rl.ok) return NextResponse.json({ error: "Slow down. Try again in a minute." }, { status: 429 });
   try {
     if (action === "verify") {
       const user = await verifyOtp(mobile || "", code || "");
@@ -23,6 +34,6 @@ export async function POST(req: Request) {
     const result = await requestOtp(mobile || "");
     return NextResponse.json(result);
   } catch (e) {
-    return NextResponse.json({ error: e instanceof Error ? e.message : "Failed" }, { status: 400 });
+    return apiError(e);
   }
 }

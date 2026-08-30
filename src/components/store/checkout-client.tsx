@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { formatInr } from "@/lib/utils";
+import { normalizeMobileInput, normalizeOtpInput } from "@/lib/validations";
 
 export function CheckoutClient({
   subtotal,
@@ -35,27 +36,38 @@ export function CheckoutClient({
   const [pending, setPending] = useState(false);
 
   async function sendOtp() {
+    const normalized = normalizeMobileInput(phone);
+    if (!/^[6-9]\d{9}$/.test(normalized)) {
+      setError("Enter a valid 10-digit mobile number.");
+      return;
+    }
     const res = await fetch("/api/auth/otp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mobile: phone, action: "request" }),
+      credentials: "include",
+      body: JSON.stringify({ mobile: normalized, action: "request" }),
     });
     const data = await res.json();
-    if (!res.ok) return setError(data.error);
+    if (!res.ok) return setError(data.error || "Could not send OTP.");
+    setPhone(normalized);
     setDevOtp(data.devOtp || "");
     setError("");
   }
 
   async function verify() {
+    const normalizedMobile = normalizeMobileInput(phone);
+    const normalizedOtp = normalizeOtpInput(otp);
     const res = await fetch("/api/auth/otp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mobile: phone, action: "verify", code: otp }),
+      credentials: "include",
+      body: JSON.stringify({ mobile: normalizedMobile, action: "verify", code: normalizedOtp }),
     });
     const data = await res.json();
-    if (!res.ok) return setError(data.error);
-    setForm((f) => ({ ...f, mobile: phone }));
+    if (!res.ok) return setError(data.error || "Invalid OTP.");
+    setForm((f) => ({ ...f, mobile: normalizedMobile }));
     setStep(2);
+    setError("");
   }
 
   async function place() {

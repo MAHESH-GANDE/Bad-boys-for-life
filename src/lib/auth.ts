@@ -3,7 +3,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import bcrypt from "bcryptjs";
 import { prisma } from "./db";
-import { mobileSchema } from "./validations";
+import { mobileSchema, otpSchema } from "./validations";
 import { AdminRole } from "@prisma/client";
 
 const secret = new TextEncoder().encode(
@@ -39,8 +39,9 @@ export async function requestOtp(mobileRaw: string) {
   };
 }
 
-export async function verifyOtp(mobileRaw: string, code: string) {
+export async function verifyOtp(mobileRaw: string, codeRaw: string) {
   const mobile = mobileSchema.parse(mobileRaw);
+  const code = otpSchema.parse(codeRaw);
   const challenge = await prisma.otpChallenge.findFirst({
     where: { mobile, consumed: false, expiresAt: { gt: new Date() } },
     orderBy: { createdAt: "desc" },
