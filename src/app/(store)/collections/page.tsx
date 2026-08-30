@@ -3,7 +3,7 @@ import Image from "next/image";
 import { prisma } from "@/lib/db";
 import { trendCollections } from "@/lib/trend-collections";
 import { PremiumCollectionCard } from "@/components/store/premium-collection-card";
-import { ShopByColor } from "@/components/store/shop-by-color";
+import { ColorFilterBar } from "@/components/store/color-filter-bar";
 
 export default async function CollectionsPage() {
   const cols = await prisma.collection.findMany({ where: { published: true }, orderBy: { sortOrder: "asc" } });
@@ -18,15 +18,15 @@ export default async function CollectionsPage() {
           <p className="text-[10px] tracking-[0.32em] text-bb-off/60">BADBOYS · MENSWEAR</p>
           <h1 className="mt-3 font-display text-5xl tracking-[0.16em] md:text-7xl">COLLECTIONS</h1>
           <p className="mt-4 max-w-lg text-sm text-bb-off/70">
-            Trend-led drops. Premium cuts. Every colour we release — curated like a lookbook, not a catalog.
+            New in, essentials, streetwear — every piece in every colour we release.
           </p>
         </div>
       </section>
 
-      <ShopByColor />
+      <ColorFilterBar />
 
       <section className="mx-auto max-w-7xl px-4 py-16 md:py-20">
-        <p className="mb-8 text-[10px] tracking-[0.32em] text-bb-off/50">TRENDING NOW</p>
+        <p className="mb-8 text-[10px] tracking-[0.32em] text-bb-off/50">FEATURED</p>
         <div className="grid gap-4 md:grid-cols-2">
           {trendCollections.slice(0, 4).map((c) => (
             <PremiumCollectionCard key={c.slug} collection={c} />
@@ -55,7 +55,7 @@ export default async function CollectionsPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-bb-black via-bb-black/30 to-transparent" />
                   <div className="absolute inset-x-0 bottom-0 p-6">
                     <p className="font-display text-2xl tracking-[0.12em]">{c.name.toUpperCase()}</p>
-                    <p className="mt-2 text-[10px] tracking-[0.22em] text-bb-off/50">ENTER →</p>
+                    <p className="mt-2 text-[10px] tracking-[0.22em] text-bb-off/50">SHOP →</p>
                   </div>
                 </div>
               </Link>

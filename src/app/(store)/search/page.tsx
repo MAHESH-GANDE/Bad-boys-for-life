@@ -27,7 +27,7 @@ export default async function SearchPage({
           <input
             name="q"
             defaultValue={q}
-            placeholder="BLACK OVERSIZED T-SHIRT"
+            placeholder="Search products"
             className="w-full border-b border-bb-off/30 bg-transparent py-4 font-display text-2xl tracking-[0.12em] outline-none md:text-4xl"
           />
         </form>

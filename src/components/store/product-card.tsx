@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Heart } from "lucide-react";
 import { useState } from "react";
-import { discountPercent, formatInr, slugify } from "@/lib/utils";
+import { discountPercent, formatInr } from "@/lib/utils";
 import type { ProductCardData } from "@/lib/catalog";
 import { useToast } from "@/components/providers";
 import { useCartDrawer } from "@/components/store/cart-drawer";
@@ -88,13 +88,11 @@ export function ProductCard({ product }: { product: ProductCardData }) {
         {colours.map(([name, hex]) => (
           <Link
             key={name}
-            href={`/collections/color/${slugify(name)}`}
+            href={`/shop?colour=${encodeURIComponent(name)}`}
             title={name}
-            className="flex items-center gap-1.5 border border-bb-off/15 px-1.5 py-1 text-[9px] tracking-[0.12em] uppercase transition hover:border-bb-off/40"
-          >
-            <span className="h-3 w-3 shrink-0 border border-bb-off/40" style={{ background: hex }} />
-            <span className="text-bb-off/60">{name}</span>
-          </Link>
+            className="h-3.5 w-3.5 border border-bb-off/35 transition hover:scale-110 hover:border-bb-off"
+            style={{ background: hex }}
+          />
         ))}
       </div>
       <button

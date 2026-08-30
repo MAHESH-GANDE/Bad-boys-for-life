@@ -7,10 +7,10 @@ import { SkullMark, Wordmark } from "@/components/brand/mark";
 import { useCartDrawer } from "@/components/store/cart-drawer";
 
 const nav = [
-  { href: "/collections", label: "COLLECTIONS" },
-  { href: "/collections/black", label: "BLACK" },
   { href: "/new-arrivals", label: "NEW IN" },
-  { href: "/shop", label: "CLOTHING", mega: true },
+  { href: "/shop", label: "SHOP", mega: true },
+  { href: "/collections", label: "COLLECTIONS" },
+  { href: "/bestsellers", label: "BESTSELLERS" },
   { href: "/sale", label: "SALE" },
 ];
 
@@ -80,17 +80,20 @@ export function Header({ categories }: { categories: Cat[] }) {
         >
           <div className="mx-auto grid max-w-7xl grid-cols-3 gap-10 px-8 py-10">
             <div>
-              <p className="mb-4 text-[10px] tracking-[0.28em] text-bb-off/50">SHOP BY COLOUR</p>
+              <p className="mb-4 text-[10px] tracking-[0.28em] text-bb-off/50">COLOUR</p>
               <ul className="space-y-2 text-sm">
+                <li>
+                  <Link href="/shop">All colours</Link>
+                </li>
                 {[
-                  ["Black", "black"],
-                  ["Off-White", "off-white"],
-                  ["White", "white"],
-                  ["Blood", "blood"],
-                  ["Charcoal", "charcoal"],
-                ].map(([name, slug]) => (
-                  <li key={slug}>
-                    <Link href={`/collections/color/${slug}`}>{name}</Link>
+                  ["Black", "Black"],
+                  ["Off-White", "Off-White"],
+                  ["White", "White"],
+                  ["Blood", "Blood"],
+                  ["Charcoal", "Charcoal"],
+                ].map(([label, name]) => (
+                  <li key={name}>
+                    <Link href={`/shop?colour=${encodeURIComponent(name)}`}>{label}</Link>
                   </li>
                 ))}
               </ul>

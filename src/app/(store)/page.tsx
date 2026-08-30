@@ -4,12 +4,12 @@ import { ProductGrid } from "@/components/store/product-card";
 import { SkullMark, Wordmark } from "@/components/brand/mark";
 import { Hero } from "@/components/store/hero";
 import { PremiumCollectionGrid } from "@/components/store/premium-collection-card";
-import { ShopByColor } from "@/components/store/shop-by-color";
+import { ColorFilterBar } from "@/components/store/color-filter-bar";
 import { trendCollections } from "@/lib/trend-collections";
 
 export default async function HomePage() {
-  const black = await listProducts({ colour: ["Black"], sort: "bestselling" });
   const newest = await listProducts({ sort: "newest" });
+  const best = await listProducts({ sort: "bestselling" });
   const street = await listProducts({ collection: "streetwear", sort: "bestselling" });
 
   return (
@@ -19,17 +19,19 @@ export default async function HomePage() {
         subtitle="FOR LIFE"
         body="MENSWEAR"
         image="/images/hero-menswear.jpg"
-        ctaLabel="SHOP COLLECTIONS"
-        ctaHref="/collections"
-        secondaryLabel="SHOP BLACK"
-        secondaryHref="/collections/black"
+        ctaLabel="SHOP NOW"
+        ctaHref="/shop"
+        secondaryLabel="NEW IN"
+        secondaryHref="/new-arrivals"
       />
+
+      <ColorFilterBar />
 
       <section className="mx-auto max-w-7xl px-4 py-16 md:py-20">
         <div className="mb-8 flex items-end justify-between">
           <div>
-            <p className="text-[10px] tracking-[0.32em] text-bb-off/50">CURATED DROPS</p>
-            <h2 className="mt-2 font-display text-3xl tracking-[0.16em] md:text-5xl">TREND COLLECTIONS</h2>
+            <p className="text-[10px] tracking-[0.32em] text-bb-off/50">THIS SEASON</p>
+            <h2 className="mt-2 font-display text-3xl tracking-[0.16em] md:text-5xl">COLLECTIONS</h2>
           </div>
           <Link href="/collections" className="hidden text-[10px] tracking-[0.22em] text-bb-off/50 hover:text-bb-off md:block">
             VIEW ALL
@@ -38,16 +40,14 @@ export default async function HomePage() {
         <PremiumCollectionGrid collections={trendCollections.slice(0, 5)} />
       </section>
 
-      <ShopByColor />
-
       <section className="mx-auto max-w-7xl px-4 py-16">
-        <SectionHead title="THE BLACK COLLECTION" href="/collections/black" />
-        <ProductGrid products={black.slice(0, 4)} />
+        <SectionHead title="NEW IN" href="/new-arrivals" />
+        <ProductGrid products={newest.slice(0, 8)} />
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-16">
-        <SectionHead title="NEW DROP" href="/collections/new-drop" />
-        <ProductGrid products={newest.slice(0, 4)} />
+        <SectionHead title="BEST SELLERS" href="/bestsellers" />
+        <ProductGrid products={best.slice(0, 8)} />
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-16">
@@ -62,8 +62,8 @@ export default async function HomePage() {
         <p className="mt-4 font-display text-3xl tracking-[0.16em] text-bb-off/70 md:text-5xl">
           WE WEAR OUR OWN.
         </p>
-        <Link href="/collections" className="mt-10 inline-block bg-bb-off px-10 py-3 text-xs tracking-[0.28em] text-bb-black">
-          EXPLORE ALL COLLECTIONS
+        <Link href="/shop" className="mt-10 inline-block bg-bb-off px-10 py-3 text-xs tracking-[0.28em] text-bb-black">
+          SHOP ALL
         </Link>
       </section>
     </div>

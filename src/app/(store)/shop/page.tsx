@@ -1,4 +1,5 @@
 import { CatalogListing } from "@/components/store/catalog-listing";
+import { ColorFilterBar } from "@/components/store/color-filter-bar";
 import { parseCatalogParams } from "@/lib/search";
 import { Suspense } from "react";
 
@@ -9,9 +10,12 @@ export default async function ShopPage({
 }) {
   const sp = await searchParams;
   const filters = parseCatalogParams(sp);
+  const colour = filters.colour?.[0];
+  const title = colour ? `${colour.toUpperCase()}` : "ALL PRODUCTS";
   return (
     <Suspense>
-      <CatalogListing title="ALL PRODUCTS" filters={filters} />
+      <ColorFilterBar compact />
+      <CatalogListing title={title} filters={filters} />
     </Suspense>
   );
 }
