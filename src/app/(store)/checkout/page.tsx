@@ -1,6 +1,8 @@
 import { getSessionUser } from "@/lib/auth";
 import { getOrCreateCart, cartTotals } from "@/lib/cart";
 import { CheckoutClient } from "@/components/store/checkout-client";
+import { validateCoupon } from "@/lib/coupons";
+import { prisma } from "@/lib/db";
 import Link from "next/link";
 
 export default async function CheckoutPage() {
@@ -17,5 +19,36 @@ export default async function CheckoutPage() {
       </div>
     );
   }
-  return <CheckoutClient subtotal={subtotal} loggedIn={!!user} mobile={user?.mobile} />;
+
+  let couponDiscount = 0;
+  let appliedCoupon: string | undefined;
+  if (cart.couponCode) {
+    const coupon = await prisma.coupon.findUnique({ where: { code: cart.couponCode } });
+    if (coupon) {
+      const first = user
+        ? (await prisma.order.count({ where: { userId: user.id, status: { not: "CANCELLED" } } })) === 0
+        : true;
+      const check = validateCoupon(coupon, {
+        subtotal,
+        productIds: cart.items.map((i) => i.variant.productId),
+        categoryIds: cart.items.map((i) => i.variant.product.categoryId),
+        userId: user?.id,
+        isFirstOrder: first,
+      });
+      if (check.ok) {
+        couponDiscount = check.discount;
+        appliedCoupon = cart.couponCode;
+      }
+    }
+  }
+
+  return (
+    <CheckoutClient
+      subtotal={subtotal}
+      loggedIn={!!user}
+      mobile={user?.mobile}
+      couponCode={appliedCoupon}
+      couponDiscount={couponDiscount}
+    />
+  );
 }

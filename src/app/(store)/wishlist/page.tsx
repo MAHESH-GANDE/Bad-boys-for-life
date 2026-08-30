@@ -2,19 +2,12 @@ import { getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { productCardInclude, serialize } from "@/lib/catalog";
 import { ProductGrid } from "@/components/store/product-card";
+import { GuestWishlistView } from "@/components/store/guest-wishlist-view";
 import Link from "next/link";
 
 export default async function WishlistPage() {
   const user = await getSessionUser();
-  if (!user) {
-    return (
-      <Empty
-        title="YOUR WISHLIST IS EMPTY."
-        cta="LOGIN TO SAVE"
-        href="/account"
-      />
-    );
-  }
+  if (!user) return <GuestWishlistView />;
   const wish = await prisma.wishlist.findUnique({
     where: { userId: user.id },
     include: { items: true },

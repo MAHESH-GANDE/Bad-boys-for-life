@@ -4,10 +4,24 @@ import { prisma } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth";
 import { trackEvent } from "@/lib/events";
 import { getAnonSessionId } from "@/lib/session-id";
+import { productCardInclude, serialize } from "@/lib/catalog";
 
-export async function GET() {
+export async function GET(req: Request) {
   const user = await getSessionUser();
-  if (!user) return NextResponse.json({ items: [], guest: true });
+  if (!user) {
+    const ids =
+      new URL(req.url).searchParams
+        .get("ids")
+        ?.split(",")
+        .map((id) => id.trim())
+        .filter(Boolean) ?? [];
+    if (!ids.length) return NextResponse.json({ items: [], products: [], guest: true });
+    const products = await prisma.product.findMany({
+      where: { id: { in: ids }, published: true },
+      include: productCardInclude,
+    });
+    return NextResponse.json({ items: [], products: serialize(products), guest: true });
+  }
   const list = await prisma.wishlist.findUnique({
     where: { userId: user.id },
     include: { items: true },

@@ -9,10 +9,14 @@ export function CheckoutClient({
   subtotal,
   loggedIn,
   mobile,
+  couponCode: initialCoupon,
+  couponDiscount: initialDiscount,
 }: {
   subtotal: number;
   loggedIn: boolean;
   mobile?: string;
+  couponCode?: string;
+  couponDiscount?: number;
 }) {
   const router = useRouter();
   const [step, setStep] = useState(loggedIn ? 2 : 1);
@@ -20,6 +24,9 @@ export function CheckoutClient({
   const [otp, setOtp] = useState("");
   const [devOtp, setDevOtp] = useState("");
   const [email, setEmail] = useState("");
+  const [couponCode, setCouponCode] = useState(initialCoupon || "");
+  const [couponDiscount, setCouponDiscount] = useState(initialDiscount ?? 0);
+  const [couponMsg, setCouponMsg] = useState(initialCoupon ? `Applied · ${initialCoupon}` : "");
   const [form, setForm] = useState({
     fullName: "",
     mobile: mobile || "",
@@ -70,17 +77,38 @@ export function CheckoutClient({
     setError("");
   }
 
+  async function applyCoupon() {
+    setCouponMsg("");
+    const res = await fetch("/api/coupons", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ code: couponCode }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      setCouponMsg(data.error || "Invalid code.");
+      setCouponDiscount(0);
+      return;
+    }
+    setCouponDiscount(data.discount);
+    setCouponCode(data.code);
+    setCouponMsg(`Applied · ${formatInr(data.discount)} off`);
+  }
+
   async function place() {
     setPending(true);
     setError("");
     const res = await fetch("/api/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({
         email,
         address: form,
         deliveryMethod: method,
         paymentMethod: pay === "UPI" || pay === "CARD" || pay === "NETBANKING" || pay === "WALLET" ? "RAZORPAY" : "COD",
+        couponCode: couponCode || undefined,
       }),
     });
     const data = await res.json();
@@ -105,7 +133,11 @@ export function CheckoutClient({
   return (
     <div className="mx-auto max-w-xl px-4 py-12">
       <h1 className="font-display text-4xl tracking-[0.16em]">CHECKOUT</h1>
-      <p className="mt-2 text-sm text-bb-off/50">Bag {formatInr(subtotal)}</p>
+      <div className="mt-2 space-y-1 text-sm text-bb-off/50">
+        <p>Bag {formatInr(subtotal)}</p>
+        {couponDiscount > 0 && <p className="text-bb-off/70">Coupon −{formatInr(couponDiscount)}</p>}
+        <p className="text-bb-off">Total {formatInr(Math.max(0, subtotal - couponDiscount))}</p>
+      </div>
       {error && <p className="mt-4 border border-bb-red px-3 py-2 text-sm text-bb-red">{error}</p>}
 
       {step === 1 && (
@@ -143,7 +175,20 @@ export function CheckoutClient({
           <label className="flex gap-2 text-sm">
             <input type="radio" checked={method === "EXPRESS"} onChange={() => setMethod("EXPRESS")} /> Express
           </label>
-          <p className="pt-4 text-[10px] tracking-[0.22em]">STEP 4 · PAYMENT</p>
+          <p className="pt-4 text-[10px] tracking-[0.22em]">STEP 4 · COUPON</p>
+          <div className="flex gap-2">
+            <input
+              value={couponCode}
+              onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+              placeholder="COUPON CODE"
+              className="flex-1 border border-bb-off/20 bg-transparent px-3 py-2 text-sm"
+            />
+            <button type="button" onClick={applyCoupon} className="border border-bb-off px-3 text-xs tracking-[0.16em]">
+              APPLY
+            </button>
+          </div>
+          {couponMsg && <p className="text-xs text-bb-off/60">{couponMsg}</p>}
+          <p className="pt-4 text-[10px] tracking-[0.22em]">STEP 5 · PAYMENT</p>
           {(["UPI", "CARD", "NETBANKING", "WALLET", "COD"] as const).map((m) => (
             <label key={m} className="flex gap-2 text-sm">
               <input type="radio" checked={pay === m} onChange={() => setPay(m)} /> {m}

@@ -1,5 +1,6 @@
 import { brandColors } from "./colors";
 import { colourNameFromSlug } from "./product-colours";
+import { shopFitFilters } from "./fits";
 
 export type SearchFilters = {
   q?: string;
@@ -60,13 +61,26 @@ export function parseCatalogParams(sp: Record<string, string | string[] | undefi
     const n = Number(v);
     return Number.isFinite(n) ? n : undefined;
   };
+  const normalizeFit = (values?: string[]) => {
+    if (!values?.length) return undefined;
+    const canonical = shopFitFilters.map((f) => f.toLowerCase());
+    return [
+      ...new Set(
+        values.map((raw) => {
+          const idx = canonical.indexOf(raw.trim().toLowerCase());
+          return idx >= 0 ? shopFitFilters[idx] : raw.trim();
+        }),
+      ),
+    ];
+  };
+
   return {
     q: g("q"),
     sort: (g("sort") as SearchFilters["sort"]) || "recommended",
     category: g("category"),
     size: split("size"),
     colour: normalizeColourParams(split("colour")),
-    fit: split("fit"),
+    fit: normalizeFit(split("fit")),
     fabric: split("fabric"),
     minPrice: num("minPrice"),
     maxPrice: num("maxPrice"),
