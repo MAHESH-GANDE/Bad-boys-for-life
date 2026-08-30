@@ -6,6 +6,27 @@ D2C commerce: storefront, OTP accounts, cart/checkout, Razorpay-ready payments, 
 
 **GitHub:** [github.com/MAHESH-GANDE/Bad-boys-for-life](https://github.com/MAHESH-GANDE/Bad-boys-for-life)
 
+### Sync code to GitHub
+
+The full project lives on Cursor until you push once to GitHub.
+
+1. In **Cursor → Cloud → Secrets**, add `GH_TOKEN` (GitHub personal access token with `repo` scope for `Bad-boys-for-life`).
+2. Run:
+
+```bash
+chmod +x scripts/sync-github.sh
+./scripts/sync-github.sh
+```
+
+Or from any machine with GitHub login:
+
+```bash
+git clone https://origin.cursor.com/mahesh-gande/tmp-23a14af72348b21c.git badboys
+cd badboys
+git remote add github https://github.com/MAHESH-GANDE/Bad-boys-for-life.git
+git push -u github main
+```
+
 ## Run locally
 
 ```bash

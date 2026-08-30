@@ -1,0 +1,5 @@
+{
+  "name": "BADBOYS Store",
+  "install": "npm ci && npx prisma generate",
+  "repositoryDependencies": ["MAHESH-GANDE/Bad-boys-for-life"]
+}
