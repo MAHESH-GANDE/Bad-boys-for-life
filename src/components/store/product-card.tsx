@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Heart } from "lucide-react";
 import { useState } from "react";
 import { discountPercent, formatInr } from "@/lib/utils";
-import { sortColourEntries, brandColors, colorTextClass, isLightColor } from "@/lib/colors";
+import { sortColourEntries, colorTextClass, isLightColor } from "@/lib/colors";
 import { colourSlugFromName, productImageForColour } from "@/lib/product-colours";
 import type { ProductCardData } from "@/lib/catalog";
 import { useToast } from "@/components/providers";
@@ -41,8 +41,10 @@ export function ProductCard({
   const displayVariants = displayColour
     ? product.variants.filter((v) => v.colour === displayColour)
     : product.variants;
-  const price = Math.min(...displayVariants.map((v) => v.price));
-  const mrp = Math.min(...displayVariants.map((v) => v.mrp));
+  const prices = displayVariants.map((v) => v.price);
+  const mrps = displayVariants.map((v) => v.mrp);
+  const price = prices.length ? Math.min(...prices) : 0;
+  const mrp = mrps.length ? Math.min(...mrps) : 0;
   const off = discountPercent(mrp, price);
   const inStock = displayVariants.some((v) => (v.inventory?.available ?? 0) > 0);
   const low = displayVariants.some(
@@ -75,11 +77,16 @@ export function ProductCard({
   async function wish(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    await fetch("/api/wishlist", {
+    const res = await fetch("/api/wishlist", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ productId: product.id }),
     });
+    const data = await res.json();
+    if (!res.ok) {
+      toast.push(data.error || "Sign in to save.");
+      return;
+    }
     toast.push("SAVED");
   }
 

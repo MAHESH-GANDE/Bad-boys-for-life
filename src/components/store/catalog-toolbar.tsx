@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { brandColors } from "@/lib/colors";
 
 const sorts = [
   ["recommended", "Recommended"],
@@ -10,6 +11,8 @@ const sorts = [
   ["price-desc", "Price High → Low"],
   ["rating", "Rating"],
 ] as const;
+
+const fits = ["Boxy", "Relaxed", "Cuban", "Overshirt", "Baggy", "Straight", "Pleated", "Parachute", "Minimal", "Oversized", "Resort"];
 
 export function CatalogToolbar({ count }: { count: number }) {
   const router = useRouter();
@@ -40,7 +43,9 @@ export function CatalogToolbar({ count }: { count: number }) {
         >
           <option value="">Size</option>
           {["S", "M", "L", "XL", "XXL"].map((s) => (
-            <option key={s}>{s}</option>
+            <option key={s} value={s}>
+              {s}
+            </option>
           ))}
         </select>
         <select
@@ -49,8 +54,10 @@ export function CatalogToolbar({ count }: { count: number }) {
           onChange={(e) => setFilter("colour", e.target.value)}
         >
           <option value="">Colour</option>
-          {["Black", "Off-White", "White", "Blood", "Charcoal"].map((s) => (
-            <option key={s}>{s}</option>
+          {brandColors.map((c) => (
+            <option key={c.slug} value={c.slug}>
+              {c.name}
+            </option>
           ))}
         </select>
         <select
@@ -59,8 +66,10 @@ export function CatalogToolbar({ count }: { count: number }) {
           onChange={(e) => setFilter("fit", e.target.value)}
         >
           <option value="">Fit</option>
-          {["Oversized", "Regular", "Relaxed", "Slim"].map((s) => (
-            <option key={s}>{s}</option>
+          {fits.map((s) => (
+            <option key={s} value={s}>
+              {s}
+            </option>
           ))}
         </select>
         <select
@@ -78,4 +87,3 @@ export function CatalogToolbar({ count }: { count: number }) {
     </div>
   );
 }
-

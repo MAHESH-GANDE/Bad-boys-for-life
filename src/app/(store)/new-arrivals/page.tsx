@@ -10,7 +10,7 @@ export default async function Page({
   const filters = parseCatalogParams(await searchParams);
   return (
     <Suspense>
-      <CatalogListing title="NEW ARRIVALS" filters={{ ...filters, sort: filters.sort || "newest" }} />
+      <CatalogListing title="NEW ARRIVALS" filters={{ ...filters, sort: filters.sort || "newest", isNew: true }} />
     </Suspense>
   );
 }

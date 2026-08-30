@@ -9,40 +9,19 @@ import { useCartDrawer } from "@/components/store/cart-drawer";
 import { SizeGuideModal } from "@/components/store/size-guide-modal";
 import { colourSlugFromName, productImageForColour, resolveProductColour } from "@/lib/product-colours";
 import { sortColourEntries } from "@/lib/colors";
-
-type Product = {
-  id: string;
-  name: string;
-  slug: string;
-  shortDescription: string;
-  description: string;
-  fit: string;
-  fabric: string;
-  careInstructions: string;
-  ratingAvg: unknown;
-  ratingCount: number;
-  isPreorder: boolean;
-  expectedDispatch: Date | null;
-  images: { url: string; alt: string; kind: string; colour: string | null }[];
-  variants: {
-    id: string;
-    colour: string;
-    colourHex: string;
-    size: string;
-    price: number;
-    mrp: number;
-    sku: string;
-    inventory: { available: number; lowStockAt: number } | null;
-  }[];
-  reviews: { id: string; rating: number; body: string; verified: boolean }[];
-};
+import type { ProductCardData } from "@/lib/catalog";
 
 export function ProductDetail({
   product,
   sizeGuide,
   initialColourSlug,
 }: {
-  product: Product;
+  product: ProductCardData & {
+    careInstructions: string;
+    isPreorder: boolean;
+    expectedDispatch: Date | null;
+    reviews: { id: string; rating: number; body: string; verified: boolean }[];
+  };
   sizeGuide: { title: string; rows: unknown } | null;
   initialColourSlug?: string | null;
 }) {
@@ -50,7 +29,7 @@ export function ProductDetail({
   const colours = sortColourEntries(
     [...new Map(product.variants.map((v) => [v.colour, v.colourHex])).entries()],
   );
-  const [colour, setColour] = useState(() => resolveProductColour(product, initialColourSlug) ?? colours[0][0]);
+  const [colour, setColour] = useState(() => resolveProductColour(product, initialColourSlug) ?? colours[0]?.[0] ?? "");
   const [size, setSize] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
   const [guide, setGuide] = useState(false);
@@ -159,7 +138,7 @@ export function ProductDetail({
         </div>
       </div>
 
-      <div>
+      <div className="pb-28 md:pb-0">
         <h1 className="font-display text-4xl tracking-[0.08em] md:text-5xl">{product.name}</h1>
         {product.ratingCount > 0 && (
           <p className="mt-2 text-sm text-bb-off/60">
@@ -242,6 +221,25 @@ export function ProductDetail({
         {eta && <p className="mt-2 text-xs text-bb-off/60">{eta}</p>}
 
         <div className="mt-8 hidden gap-3 md:flex">
+          <div className="flex items-center border border-bb-off/20">
+            <button
+              type="button"
+              onClick={() => setQty((q) => Math.max(1, q - 1))}
+              className="px-3 py-4 text-sm"
+              aria-label="Decrease quantity"
+            >
+              −
+            </button>
+            <span className="min-w-10 text-center text-sm">{qty}</span>
+            <button
+              type="button"
+              onClick={() => setQty((q) => Math.min(10, q + 1))}
+              className="px-3 py-4 text-sm"
+              aria-label="Increase quantity"
+            >
+              +
+            </button>
+          </div>
           <button onClick={() => add(false)} className="flex-1 bg-bb-off py-4 text-xs tracking-[0.24em] text-bb-black">
             ADD TO BAG
           </button>
@@ -273,13 +271,36 @@ export function ProductDetail({
         </div>
       </div>
 
-      <div className="fixed bottom-14 left-0 right-0 z-30 flex gap-2 border-t border-bb-off/15 bg-bb-black p-3 md:hidden">
-        <button onClick={() => add(false)} className="flex-1 bg-bb-off py-3 text-xs tracking-[0.2em] text-bb-black">
-          ADD TO BAG
-        </button>
-        <button onClick={() => add(true)} className="flex-1 border border-bb-off py-3 text-xs tracking-[0.2em]">
-          BUY IT NOW
-        </button>
+      <div className="fixed bottom-14 left-0 right-0 z-30 border-t border-bb-off/15 bg-bb-black p-3 md:hidden">
+        <div className="mb-2 flex items-center justify-center gap-2">
+          <div className="flex items-center border border-bb-off/20">
+            <button
+              type="button"
+              onClick={() => setQty((q) => Math.max(1, q - 1))}
+              className="px-3 py-2 text-sm"
+              aria-label="Decrease quantity"
+            >
+              −
+            </button>
+            <span className="min-w-10 text-center text-sm tabular-nums">{qty}</span>
+            <button
+              type="button"
+              onClick={() => setQty((q) => Math.min(10, q + 1))}
+              className="px-3 py-2 text-sm"
+              aria-label="Increase quantity"
+            >
+              +
+            </button>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <button onClick={() => add(false)} className="flex-1 bg-bb-off py-3 text-xs tracking-[0.2em] text-bb-black">
+            ADD TO BAG
+          </button>
+          <button onClick={() => add(true)} className="flex-1 border border-bb-off py-3 text-xs tracking-[0.2em]">
+            BUY IT NOW
+          </button>
+        </div>
       </div>
 
       {guide && sizeGuide && (

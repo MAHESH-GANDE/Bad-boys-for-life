@@ -1,9 +1,13 @@
+import { brandColors } from "./colors";
+import { colourNameFromSlug } from "./product-colours";
+
 export type SearchFilters = {
   q?: string;
+  sort?: "recommended" | "newest" | "price-asc" | "price-desc" | "bestselling" | "rating";
   category?: string;
   collection?: string;
-  colour?: string[];
   size?: string[];
+  colour?: string[];
   fit?: string[];
   fabric?: string[];
   pattern?: string[];
@@ -11,8 +15,9 @@ export type SearchFilters = {
   sleeve?: string[];
   minPrice?: number;
   maxPrice?: number;
-  availability?: "in-stock" | "all";
-  sort?: "recommended" | "newest" | "bestselling" | "price-asc" | "price-desc" | "rating";
+  availability?: "in-stock";
+  isNew?: boolean;
+  onSale?: boolean;
 };
 
 export function tokenizeQuery(q: string) {
@@ -27,18 +32,44 @@ export const searchProvider = {
   engine: "postgres" as "postgres" | "algolia" | "elasticsearch",
 };
 
-export function parseCatalogParams(sp: Record<string, string | string[] | undefined>) {
+/** Map URL colour slugs / legacy names to DB variant colour names. */
+export function normalizeColourParams(values?: string[]) {
+  if (!values?.length) return undefined;
+  const names = brandColors.map((c) => c.name);
+  return [
+    ...new Set(
+      values.map((raw) => {
+        const trimmed = raw.trim();
+        const byName = names.find((n) => n.toLowerCase() === trimmed.toLowerCase());
+        if (byName) return byName;
+        return colourNameFromSlug(trimmed.toLowerCase());
+      }),
+    ),
+  ];
+}
+
+export function parseCatalogParams(sp: Record<string, string | string[] | undefined>): SearchFilters {
   const g = (k: string) => {
     const v = sp[k];
     return Array.isArray(v) ? v[0] : v;
   };
   const split = (k: string) => (g(k) ? g(k)!.split(",") : undefined);
+  const num = (k: string) => {
+    const v = g(k);
+    if (!v) return undefined;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : undefined;
+  };
   return {
     q: g("q"),
     sort: (g("sort") as SearchFilters["sort"]) || "recommended",
+    category: g("category"),
     size: split("size"),
-    colour: split("colour"),
+    colour: normalizeColourParams(split("colour")),
     fit: split("fit"),
     fabric: split("fabric"),
+    minPrice: num("minPrice"),
+    maxPrice: num("maxPrice"),
+    availability: g("availability") === "in-stock" ? "in-stock" : undefined,
   };
 }

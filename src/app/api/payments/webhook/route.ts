@@ -81,5 +81,3 @@ export async function PUT(req: Request) {
   );
   return res;
 }
-
-export { mintMockSignature };

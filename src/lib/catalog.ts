@@ -25,8 +25,25 @@ export function serialize<T>(value: T): T {
 
 export async function listProducts(filters: SearchFilters = {}) {
   const tokens = filters.q ? tokenizeQuery(filters.q) : [];
+
+  const variantClauses: Prisma.ProductVariantWhereInput[] = [];
+  if (filters.colour?.length) variantClauses.push({ colour: { in: filters.colour } });
+  if (filters.size?.length) variantClauses.push({ size: { in: filters.size } });
+  if (filters.minPrice != null || filters.maxPrice != null) {
+    variantClauses.push({
+      price: {
+        ...(filters.minPrice != null ? { gte: filters.minPrice } : {}),
+        ...(filters.maxPrice != null ? { lte: filters.maxPrice } : {}),
+      },
+    });
+  }
+  if (filters.availability === "in-stock") {
+    variantClauses.push({ inventory: { available: { gt: 0 } } });
+  }
+
   const where: Prisma.ProductWhereInput = {
     published: true,
+    ...(filters.isNew ? { isNew: true } : {}),
     ...(filters.category ? { category: { slug: filters.category } } : {}),
     ...(filters.collection
       ? { collections: { some: { collection: { slug: filters.collection } } } }
@@ -50,26 +67,15 @@ export async function listProducts(filters: SearchFilters = {}) {
           })),
         }
       : {}),
-    ...(filters.colour?.length
-      ? { variants: { some: { colour: { in: filters.colour } } } }
-      : {}),
-    ...(filters.size?.length ? { variants: { some: { size: { in: filters.size } } } } : {}),
-    ...(filters.minPrice || filters.maxPrice
-      ? {
-          variants: {
-            some: {
-              price: {
-                gte: filters.minPrice,
-                lte: filters.maxPrice,
-              },
-            },
-          },
-        }
-      : {}),
-    ...(filters.availability === "in-stock"
-      ? { variants: { some: { inventory: { available: { gt: 0 } } } } }
-      : {}),
+    ...(variantClauses.length === 1
+      ? { variants: { some: variantClauses[0] } }
+      : variantClauses.length > 1
+        ? { variants: { some: { AND: variantClauses } } }
+        : {}),
   };
+
+  // Prisma cannot compare two columns in `some`; filter on-sale products after fetch.
+  const needsSaleFilter = filters.onSale;
 
   const orderBy: Prisma.ProductOrderByWithRelationInput =
     filters.sort === "newest"
@@ -86,8 +92,13 @@ export async function listProducts(filters: SearchFilters = {}) {
     orderBy,
   });
 
-  const priced = products.map((p) => {
-    const min = Math.min(...p.variants.map((v) => Number(v.price)));
+  const filtered = needsSaleFilter
+    ? products.filter((p) => p.variants.some((v) => Number(v.mrp) > Number(v.price)))
+    : products;
+
+  const priced = filtered.map((p) => {
+    const prices = p.variants.map((v) => Number(v.price));
+    const min = prices.length ? Math.min(...prices) : 0;
     return { ...p, minPrice: min };
   });
 

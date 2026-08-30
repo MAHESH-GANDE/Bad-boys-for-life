@@ -45,8 +45,9 @@ export async function POST(req: Request) {
   const shipping = shippingFor(subtotal, parsed.data.deliveryMethod, cfg.shipping);
   let discount = 0;
   let couponCode: string | undefined;
-  if (parsed.data.couponCode) {
-    const code = couponCodeSchema.parse(parsed.data.couponCode);
+  const appliedCode = parsed.data.couponCode ?? cart.couponCode ?? undefined;
+  if (appliedCode) {
+    const code = couponCodeSchema.parse(appliedCode);
     const coupon = await prisma.coupon.findUnique({ where: { code } });
     if (!coupon) return NextResponse.json({ error: "Invalid coupon." }, { status: 400 });
     const first = (await prisma.order.count({ where: { userId: user.id, status: { not: "CANCELLED" } } })) === 0;

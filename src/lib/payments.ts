@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { prisma } from "./db";
 
 export async function nextOrderNumber() {
@@ -58,7 +59,6 @@ export function verifyWebhookSignature(rawBody: string, signature: string | null
     // Mock provider: accept only internally minted events.
     return signature === `mock:${shaLike(rawBody)}`;
   }
-  const crypto = require("crypto") as typeof import("crypto");
   const expected = crypto.createHmac("sha256", secret).update(rawBody).digest("hex");
   return expected === signature;
 }
@@ -68,6 +68,5 @@ export function mintMockSignature(rawBody: string) {
 }
 
 function shaLike(value: string) {
-  const crypto = require("crypto") as typeof import("crypto");
   return crypto.createHash("sha256").update(value).digest("hex").slice(0, 24);
 }

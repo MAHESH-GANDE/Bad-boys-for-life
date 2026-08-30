@@ -34,6 +34,7 @@ export type SeedProduct = {
   isNew?: boolean;
   isBestseller?: boolean;
   isLimited?: boolean;
+  stock?: number;
 };
 
 const tee = "/images/product-oversized-tee.jpg";
@@ -152,7 +153,7 @@ export const catalogProducts: SeedProduct[] = [
     care: "Gentle wash or dry clean.",
     colours: [
       colour("Sand", "Cuban Camp Shirt", "shirts"),
-      colour("Dusty Rose", "Cuban Camp Shirt", "shirts", red),
+      colour("Dusty Rose", "Cuban Camp Shirt", "shirts"),
       colour("Ink Navy", "Cuban Camp Shirt", "shirts"),
     ],
     price: 1899,
@@ -209,8 +210,8 @@ export const catalogProducts: SeedProduct[] = [
     pattern: "Solid",
     care: "Wash inside out. Rarely.",
     colours: [
-      colour("Pitch Black", "Baggy Denim", "jeans", denim),
-      colour("Ecru", "Baggy Denim", "jeans", white),
+      colour("Pitch Black", "Baggy Denim", "jeans"),
+      colour("Ecru", "Baggy Denim", "jeans"),
     ],
     price: 2899,
     mrp: 3999,
@@ -247,8 +248,8 @@ export const catalogProducts: SeedProduct[] = [
     care: "Dry clean preferred.",
     colours: [
       colour("Stone", "Pleated Relaxed Trouser", "trousers"),
-      colour("Warm Taupe", "Pleated Relaxed Trouser", "trousers", coord),
-      colour("Ink Navy", "Pleated Relaxed Trouser", "trousers", denimJ),
+      colour("Warm Taupe", "Pleated Relaxed Trouser", "trousers"),
+      colour("Ink Navy", "Pleated Relaxed Trouser", "trousers"),
     ],
     price: 2299,
     mrp: 3299,
@@ -266,7 +267,7 @@ export const catalogProducts: SeedProduct[] = [
     fabric: "Poly blend",
     pattern: "Solid",
     care: "Dry clean.",
-    colours: [colour("Camel", "Camel Baggy Trouser", "trousers", bomber)],
+    colours: [colour("Camel", "Camel Baggy Trouser", "trousers")],
     price: 2499,
     mrp: 3499,
     isNew: true,
@@ -286,7 +287,7 @@ export const catalogProducts: SeedProduct[] = [
     colours: [
       colour("Olive", "Parachute Utility Cargo", "cargos"),
       colour("Sage", "Parachute Utility Cargo", "cargos"),
-      colour("Pitch Black", "Parachute Utility Cargo", "cargos", denim),
+      colour("Pitch Black", "Parachute Utility Cargo", "cargos"),
     ],
     price: 2599,
     mrp: 3599,
@@ -307,7 +308,10 @@ export const catalogProducts: SeedProduct[] = [
     neck: "Hood",
     sleeve: "Long",
     care: "Wash cold.",
-    colours: [colour("Heather Grey", "Minimal Drop-Shoulder Hoodie"), colour("Pitch Black", "Minimal Drop-Shoulder Hoodie", "hoodies", tee)],
+    colours: [
+      colour("Heather Grey", "Minimal Drop-Shoulder Hoodie", "hoodies"),
+      colour("Pitch Black", "Minimal Drop-Shoulder Hoodie", "hoodies"),
+    ],
     price: 2799,
     mrp: 3799,
     isBestseller: true,
@@ -325,7 +329,10 @@ export const catalogProducts: SeedProduct[] = [
     pattern: "Solid",
     sleeve: "Short",
     care: "Gentle wash as a set.",
-    colours: [colour("Sand", "Waffle Co-ord Set"), colour("Ecru", "Waffle Co-ord Set", "co-ords", white)],
+    colours: [
+      colour("Sand", "Waffle Co-ord Set", "co-ords"),
+      colour("Ecru", "Waffle Co-ord Set", "co-ords"),
+    ],
     price: 4499,
     mrp: 5999,
     isLimited: true,
@@ -344,7 +351,10 @@ export const catalogProducts: SeedProduct[] = [
     pattern: "Solid",
     sleeve: "Long",
     care: "Gentle wash.",
-    colours: [colour("Ink Navy", "Matte Bomber Jacket"), colour("Washed Charcoal", "Matte Bomber Jacket", "jackets", tee)],
+    colours: [
+      colour("Ink Navy", "Matte Bomber Jacket", "jackets"),
+      colour("Washed Charcoal", "Matte Bomber Jacket", "jackets"),
+    ],
     price: 3999,
     mrp: 5499,
   },
@@ -361,7 +371,10 @@ export const catalogProducts: SeedProduct[] = [
     pattern: "Colourblock",
     sleeve: "Long",
     care: "Dry clean.",
-    colours: [colour("Mocha", "Varsity Jacket"), colour("Camel", "Varsity Jacket", "jackets", coord)],
+    colours: [
+      colour("Mocha", "Varsity Jacket", "jackets"),
+      colour("Camel", "Varsity Jacket", "jackets"),
+    ],
     price: 4999,
     mrp: 6999,
     isLimited: true,

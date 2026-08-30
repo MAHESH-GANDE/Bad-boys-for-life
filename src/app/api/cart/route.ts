@@ -58,14 +58,28 @@ export async function POST(req: Request) {
   return NextResponse.json({ ok: true });
 }
 
+async function cartItemForUser(itemId: string, userId?: string | null) {
+  const cart = await getOrCreateCart(userId);
+  const item = cart.items.find((i) => i.id === itemId);
+  return item ? { cart, item } : null;
+}
+
 export async function PATCH(req: Request) {
   const parsed = z
     .object({ itemId: z.string().uuid(), quantity: z.number().int().min(0).max(10) })
     .safeParse(await req.json());
   if (!parsed.success) return NextResponse.json({ error: "Invalid." }, { status: 400 });
+  const user = await getSessionUser();
+  const found = await cartItemForUser(parsed.data.itemId, user?.id);
+  if (!found) return NextResponse.json({ error: "Item not found." }, { status: 404 });
+
   if (parsed.data.quantity === 0) {
     await prisma.cartItem.delete({ where: { id: parsed.data.itemId } });
   } else {
+    const available = found.item.variant.inventory?.available ?? 0;
+    if (available < parsed.data.quantity) {
+      return NextResponse.json({ error: "That size just sold out." }, { status: 409 });
+    }
     await prisma.cartItem.update({ where: { id: parsed.data.itemId }, data: { quantity: parsed.data.quantity } });
   }
   return NextResponse.json({ ok: true });
@@ -73,6 +87,9 @@ export async function PATCH(req: Request) {
 
 export async function DELETE(req: Request) {
   const { itemId } = (await req.json()) as { itemId: string };
+  const user = await getSessionUser();
+  const found = await cartItemForUser(itemId, user?.id);
+  if (!found) return NextResponse.json({ error: "Item not found." }, { status: 404 });
   await prisma.cartItem.delete({ where: { id: itemId } });
   return NextResponse.json({ ok: true });
 }
