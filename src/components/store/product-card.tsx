@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Heart } from "lucide-react";
 import { useState } from "react";
 import { discountPercent, formatInr } from "@/lib/utils";
-import { sortColourEntries, brandColors } from "@/lib/colors";
+import { sortColourEntries, brandColors, colorTextClass, isLightColor } from "@/lib/colors";
 import type { ProductCardData } from "@/lib/catalog";
 import { useToast } from "@/components/providers";
 import { useCartDrawer } from "@/components/store/cart-drawer";
@@ -89,15 +89,23 @@ export function ProductCard({ product }: { product: ProductCardData }) {
       </Link>
       <div className="mt-2 flex flex-wrap gap-1.5">
         {colours.map(([name, hex]) => {
-          const slug = brandColors.find((c) => c.name === name)?.slug ?? name.toLowerCase().replace(/\s+/g, "-");
+          const brand = brandColors.find((c) => c.name === name);
+          const slug = brand?.slug ?? name.toLowerCase().replace(/\s+/g, "-");
+          const chipText = colorTextClass(hex);
+          const chipBg = isLightColor(hex) ? "bg-white/90" : "bg-black/40";
           return (
-          <Link
-            key={name}
-            href={`/collections/color/${slug}`}
-            title={name}
-            className="h-3.5 w-3.5 border border-bb-off/35 transition hover:scale-110 hover:border-bb-off"
-            style={{ background: hex }}
-          />
+            <Link
+              key={name}
+              href={`/collections/color/${slug}`}
+              title={`Shop ${name} collection`}
+              className={`inline-flex items-center gap-1.5 border border-bb-off/25 px-2 py-1 text-[9px] tracking-[0.14em] backdrop-blur-sm transition hover:border-bb-off/60 ${chipBg} ${chipText}`}
+            >
+              <span
+                className="h-3 w-3 shrink-0 border border-black/20"
+                style={{ background: hex }}
+              />
+              {name.toUpperCase()}
+            </Link>
           );
         })}
       </div>

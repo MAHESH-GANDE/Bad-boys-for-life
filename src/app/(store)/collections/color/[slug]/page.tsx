@@ -24,7 +24,7 @@ export default async function ColorCollectionPage({
     <Suspense>
       <ColorCollectionHero color={color} />
       <CatalogListing
-        title={`${color.name.toUpperCase()} EDIT`}
+        title={`${color.name.toUpperCase()} COLLECTION`}
         filters={{ ...filters, colour: [colorFilterName(resolved)] }}
       />
     </Suspense>

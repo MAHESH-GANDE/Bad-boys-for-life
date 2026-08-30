@@ -78,3 +78,19 @@ export function sortColourEntries<T extends [string, string]>(entries: T[]) {
     return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
   });
 }
+
+/** Relative luminance — pick readable text on a colour swatch background. */
+export function isLightColor(hex: string) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.58;
+}
+
+export function colorTextClass(hex: string) {
+  return isLightColor(hex) ? "text-bb-black" : "text-bb-off";
+}
+
+export function colorMutedTextClass(hex: string) {
+  return isLightColor(hex) ? "text-bb-black/65" : "text-bb-off/70";
+}
