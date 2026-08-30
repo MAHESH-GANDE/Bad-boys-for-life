@@ -57,3 +57,4 @@ Payments are never marked paid from the browser alone. Mock Razorpay capture sti
 ## Brand marks
 
 Original skull + crossbones SVGs live in `public/logos/` and `src/components/brand/mark.tsx`. Do not substitute the Unicode skull emoji as the logo.
+# Bad-boys-for-life
