@@ -4,6 +4,8 @@ Premium contemporary menswear — **FOR LIFE**.
 
 D2C commerce: storefront, OTP accounts, cart/checkout, Razorpay-ready payments, Shiprocket-ready shipping, Prisma/PostgreSQL, and an admin console. The same API is designed for a later React Native / Expo app (`badboys://product/...`).
 
+**GitHub:** [github.com/MAHESH-GANDE/Bad-boys-for-life](https://github.com/MAHESH-GANDE/Bad-boys-for-life)
+
 ## Run locally
 
 ```bash
