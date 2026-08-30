@@ -50,8 +50,8 @@ git push -u github main
 
 ```bash
 cp .env.example .env
-# set DATABASE_URL to PostgreSQL
-npx prisma migrate dev
+# set DATABASE_URL and DIRECT_URL (same URL for local Postgres; see Neon notes in .env.example)
+npx prisma db push
 npm run db:seed
 npm run dev
 ```
@@ -72,6 +72,19 @@ Coupons: `WELCOME10`, `BAD500`.
 Next.js 15 · TypeScript · Tailwind · Framer Motion · Prisma · PostgreSQL · Zod · jose sessions
 
 Payments are never marked paid from the browser alone. Mock Razorpay capture still goes through the signed webhook verifier until live keys are set.
+
+## Deployment (Neon)
+
+Production uses [Neon](https://neon.com) serverless PostgreSQL. Full setup: **[docs/neon-setup.md](docs/neon-setup.md)**.
+
+1. Create a Neon project and copy **pooled** and **direct** connection strings (both with `?sslmode=require`).
+2. Set environment variables on your host:
+   - `DATABASE_URL` — pooled URL (`…-pooler.….neon.tech`)
+   - `DIRECT_URL` — direct URL (non-pooler hostname)
+3. Push schema and seed: `npx prisma db push && npm run db:seed`
+4. Set `AUTH_SECRET`, Razorpay/Shiprocket keys, and `NEXT_PUBLIC_APP_URL`, then `npm run build && npm run start`.
+
+For local development, keep both URLs pointed at `localhost` (see `.env.example`).
 
 ## Brand marks
 
