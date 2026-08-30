@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Search, Heart, User, ShoppingBag, Menu, X } from "lucide-react";
 import { SkullMark, Wordmark } from "@/components/brand/mark";
 import { colorTiers, colorsByTier } from "@/lib/colors";
@@ -14,14 +15,35 @@ const nav = [
   { href: "/shop", label: "SHOP", mega: true },
   { href: "/collections", label: "COLLECTIONS" },
   { href: "/sale", label: "SALE" },
-];
+] as const;
 
 type Cat = { name: string; slug: string };
 
+function closeNav(setOpen: (v: boolean) => void, setMega: (v: boolean) => void) {
+  setOpen(false);
+  setMega(false);
+}
+
 export function Header({ categories }: { categories: Cat[] }) {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [mega, setMega] = useState(false);
   const cart = useCartDrawer();
+
+  useEffect(() => {
+    setOpen(false);
+    setMega(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (open) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  const onNav = () => closeNav(setOpen, setMega);
 
   return (
     <header className="sticky top-0 z-50 border-b border-bb-off/15 bg-bb-black/95 backdrop-blur-sm">
@@ -39,6 +61,7 @@ export function Header({ categories }: { categories: Cat[] }) {
             href="/"
             className="flex min-w-0 items-center gap-2 md:gap-3"
             aria-label="BADBOYS home"
+            onClick={onNav}
           >
             <SkullMark className="h-7 w-6 shrink-0 text-bb-off md:h-8 md:w-7" />
             <Wordmark className="truncate text-sm md:text-lg" spaced={false} />
@@ -50,7 +73,8 @@ export function Header({ categories }: { categories: Cat[] }) {
             <Link
               key={item.href}
               href={item.href}
-              onMouseEnter={() => setMega(!!item.mega)}
+              onMouseEnter={() => setMega("mega" in item && !!item.mega)}
+              onClick={onNav}
               className="text-[11px] tracking-[0.22em] text-bb-off/80 transition-colors hover:text-bb-off"
             >
               {item.label}
@@ -59,13 +83,13 @@ export function Header({ categories }: { categories: Cat[] }) {
         </nav>
 
         <div className="flex shrink-0 items-center gap-4">
-          <Link href="/search" aria-label="Search" className="hidden sm:block">
+          <Link href="/search" aria-label="Search" className="hidden sm:block" onClick={onNav}>
             <Search className="h-5 w-5" />
           </Link>
-          <Link href="/wishlist" aria-label="Wishlist" className="hidden sm:block">
+          <Link href="/wishlist" aria-label="Wishlist" className="hidden sm:block" onClick={onNav}>
             <Heart className="h-5 w-5" />
           </Link>
-          <Link href="/account" aria-label="Account" className="hidden sm:block">
+          <Link href="/account" aria-label="Account" className="hidden sm:block" onClick={onNav}>
             <User className="h-5 w-5" />
           </Link>
           <button aria-label="Bag" onClick={() => cart.setOpen(true)}>
@@ -76,7 +100,7 @@ export function Header({ categories }: { categories: Cat[] }) {
 
       {mega && (
         <div
-          className="absolute left-0 right-0 hidden border-b border-bb-off/15 bg-bb-black md:block"
+          className="absolute left-0 right-0 top-full hidden border-b border-bb-off/15 bg-bb-black shadow-lg md:block"
           onMouseEnter={() => setMega(true)}
           onMouseLeave={() => setMega(false)}
         >
@@ -85,17 +109,23 @@ export function Header({ categories }: { categories: Cat[] }) {
               <p className="mb-4 text-[10px] tracking-[0.28em] text-bb-off/50">COLOUR TIERS</p>
               <ul className="space-y-4 text-sm">
                 <li>
-                  <Link href="/collections/colours" className="text-bb-off/80 hover:text-bb-off">
+                  <Link href="/collections/colours" className="text-bb-off/80 hover:text-bb-off" onClick={onNav}>
                     All colours
                   </Link>
                 </li>
                 {colorTiers.map((tier) => (
                   <li key={tier.id}>
-                    <p className="text-[9px] tracking-[0.2em] text-bb-off/40">{tier.label} · {tier.share}</p>
+                    <p className="text-[9px] tracking-[0.2em] text-bb-off/40">
+                      {tier.label} · {tier.share}
+                    </p>
                     <ul className="mt-2 space-y-1.5">
                       {colorsByTier(tier.id).slice(0, 4).map((color) => (
                         <li key={color.slug}>
-                          <Link href={`/collections/color/${color.slug}`} className="hover:text-bb-off">
+                          <Link
+                            href={`/collections/color/${color.slug}`}
+                            className="hover:text-bb-off"
+                            onClick={onNav}
+                          >
                             {color.name}
                           </Link>
                         </li>
@@ -110,7 +140,7 @@ export function Header({ categories }: { categories: Cat[] }) {
               <ul className="space-y-2">
                 {categories.map((c) => (
                   <li key={c.slug}>
-                    <Link href={`/category/${c.slug}`} className="text-sm hover:text-bb-off">
+                    <Link href={`/category/${c.slug}`} className="text-sm hover:text-bb-off" onClick={onNav}>
                       {c.name}
                     </Link>
                   </li>
@@ -122,7 +152,9 @@ export function Header({ categories }: { categories: Cat[] }) {
               <ul className="space-y-2 text-sm">
                 {fitModels.slice(0, 8).map((fit) => (
                   <li key={fit.slug}>
-                    <Link href={fit.href}>{fit.name}</Link>
+                    <Link href={fit.href} onClick={onNav}>
+                      {fit.name}
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -131,19 +163,29 @@ export function Header({ categories }: { categories: Cat[] }) {
               <p className="mb-4 text-[10px] tracking-[0.28em] text-bb-off/50">TREND COLLECTIONS</p>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <Link href="/collections/new-drop">New Drop</Link>
+                  <Link href="/collections/new-drop" onClick={onNav}>
+                    New Drop
+                  </Link>
                 </li>
                 <li>
-                  <Link href="/collections/streetwear">Streetwear</Link>
+                  <Link href="/collections/streetwear" onClick={onNav}>
+                    Streetwear
+                  </Link>
                 </li>
                 <li>
-                  <Link href="/collections/limited-edition">Limited Edition</Link>
+                  <Link href="/collections/limited-edition" onClick={onNav}>
+                    Limited Edition
+                  </Link>
                 </li>
                 <li>
-                  <Link href="/collections/essentials">Essentials</Link>
+                  <Link href="/collections/essentials" onClick={onNav}>
+                    Essentials
+                  </Link>
                 </li>
                 <li>
-                  <Link href="/collections">All Collections</Link>
+                  <Link href="/collections" onClick={onNav}>
+                    All Collections
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -152,9 +194,9 @@ export function Header({ categories }: { categories: Cat[] }) {
       )}
 
       {open && (
-        <div className="fixed inset-0 z-[60] bg-bb-black md:hidden">
-          <div className="flex h-16 items-center justify-between px-4">
-            <Link href="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
+        <div className="fixed inset-0 z-[60] flex flex-col bg-bb-black md:hidden">
+          <div className="flex h-16 shrink-0 items-center justify-between border-b border-bb-off/10 px-4">
+            <Link href="/" className="flex items-center gap-2" onClick={onNav}>
               <SkullMark className="h-7 w-6" />
               <Wordmark spaced={false} className="text-lg" />
             </Link>
@@ -162,28 +204,29 @@ export function Header({ categories }: { categories: Cat[] }) {
               <X />
             </button>
           </div>
-          <nav className="flex flex-col gap-5 px-6 py-8 text-2xl font-display tracking-[0.18em]">
-            {nav.map((item) => (
-              <Link key={item.href} href={item.href} onClick={() => setOpen(false)}>
-                {item.label}
+          <nav className="flex-1 overflow-y-auto overscroll-contain px-6 py-8">
+            <p className="mb-4 text-[10px] tracking-[0.28em] text-bb-off/40">MENU</p>
+            <div className="flex flex-col gap-5 font-display text-2xl tracking-[0.18em]">
+              {nav.map((item) => (
+                <Link key={item.href} href={item.href} onClick={onNav}>
+                  {item.label}
+                </Link>
+              ))}
+              <Link href="/search" onClick={onNav}>
+                SEARCH
               </Link>
-            ))}
-            <Link href="/search" onClick={() => setOpen(false)}>
-              SEARCH
-            </Link>
-            <Link href="/account" onClick={() => setOpen(false)}>
-              ACCOUNT
-            </Link>
-            {categories.map((c) => (
-              <Link
-                key={c.slug}
-                href={`/category/${c.slug}`}
-                onClick={() => setOpen(false)}
-                className="text-base tracking-[0.12em] text-bb-off/70"
-              >
-                {c.name}
+              <Link href="/account" onClick={onNav}>
+                ACCOUNT
               </Link>
-            ))}
+            </div>
+            <p className="mb-4 mt-10 text-[10px] tracking-[0.28em] text-bb-off/40">CATEGORIES</p>
+            <div className="flex flex-col gap-3 text-base tracking-[0.12em] text-bb-off/80">
+              {categories.map((c) => (
+                <Link key={c.slug} href={`/category/${c.slug}`} onClick={onNav}>
+                  {c.name}
+                </Link>
+              ))}
+            </div>
           </nav>
         </div>
       )}

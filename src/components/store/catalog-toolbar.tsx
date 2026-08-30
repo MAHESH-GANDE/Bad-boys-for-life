@@ -21,7 +21,7 @@ export function CatalogToolbar({ count }: { count: number }) {
 
   function pushParams(next: URLSearchParams) {
     const qs = next.toString();
-    router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    router.push(qs ? `${pathname}?${qs}` : pathname);
     router.refresh();
   }
 
@@ -37,11 +37,11 @@ export function CatalogToolbar({ count }: { count: number }) {
     if (key === "colour") {
       next.delete("colour");
       if (value) {
-        router.push(`/collections/color/${value}${next.size ? `?${next.toString()}` : ""}`, { scroll: false });
+        router.push(`/collections/color/${value}${next.size ? `?${next.toString()}` : ""}`);
         router.refresh();
         return;
       }
-      router.push(next.size ? `/shop?${next.toString()}` : "/shop", { scroll: false });
+      router.push(next.size ? `/shop?${next.toString()}` : "/shop");
       router.refresh();
       return;
     }
