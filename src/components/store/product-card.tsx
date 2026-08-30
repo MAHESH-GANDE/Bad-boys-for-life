@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Heart } from "lucide-react";
 import { useState } from "react";
 import { discountPercent, formatInr } from "@/lib/utils";
-import { sortColourEntries, colorTextClass, isLightColor } from "@/lib/colors";
+import { sortColourEntries, colorTextClass, isLightColor, colourMetaByName, colourTintOpacity } from "@/lib/colors";
 import { colourSlugFromName, productImageForColour } from "@/lib/product-colours";
 import type { ProductCardData } from "@/lib/catalog";
 import { useToast } from "@/components/providers";
@@ -28,6 +28,9 @@ export function ProductCard({
   );
   const displayColour =
     highlightColour && colours.some(([n]) => n === highlightColour) ? highlightColour : colours[0]?.[0];
+  const displayMeta = displayColour ? colourMetaByName(displayColour) : undefined;
+  const tint = displayMeta ? colourTintOpacity(displayMeta) : 0;
+  const tintHex = displayMeta?.hex ?? colours.find(([n]) => n === displayColour)?.[1];
   const primaryImg = displayColour ? productImageForColour(product, displayColour) : product.images[0];
   const img = primaryImg ?? product.images[0];
   const img2 =
@@ -105,6 +108,12 @@ export function ProductCard({
               fill
               sizes="(max-width: 768px) 50vw, 25vw"
               className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            />
+          )}
+          {tintHex && tint > 0 && (
+            <div
+              className="pointer-events-none absolute inset-0 mix-blend-color"
+              style={{ backgroundColor: tintHex, opacity: tint }}
             />
           )}
           {displayColour && (

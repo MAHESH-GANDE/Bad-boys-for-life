@@ -30,8 +30,8 @@ export const brandColors: BrandColor[] = [
   { name: "Ink Navy", slug: "ink-navy", hex: "#1B2432", tagline: "Evening smart-casual.", image: "/images/product-denim-jacket.jpg", tier: "earth", stockShare: "Earth" },
   // Muted accents (~15%)
   { name: "Terracotta", slug: "terracotta", hex: "#A65D48", tagline: "Burnt earth pop.", image: "/images/product-red-tee.jpg", tier: "accent", stockShare: "Accent" },
-  { name: "Cobalt", slug: "cobalt", hex: "#2E4A7A", tagline: "Statement blue.", image: "/images/product-shirt.jpg", tier: "accent", stockShare: "Accent" },
-  { name: "Dusty Rose", slug: "dusty-rose", hex: "#A87B7E", tagline: "Muted summer rose.", image: "/images/product-shirt.jpg", tier: "accent", stockShare: "Accent" },
+  { name: "Cobalt", slug: "cobalt", hex: "#2E4A7A", tagline: "Statement blue.", image: "/images/product-oversized-tee.jpg", tier: "accent", stockShare: "Accent" },
+  { name: "Dusty Rose", slug: "dusty-rose", hex: "#A87B7E", tagline: "Muted summer rose.", image: "/images/product-white-tee.jpg", tier: "accent", stockShare: "Accent" },
   { name: "Washed Mint", slug: "washed-mint", hex: "#A8B8AD", tagline: "Pastel sage wash.", image: "/images/product-white-tee.jpg", tier: "accent", stockShare: "Accent" },
 ];
 
@@ -93,4 +93,46 @@ export function colorTextClass(hex: string) {
 
 export function colorMutedTextClass(hex: string) {
   return isLightColor(hex) ? "text-bb-black/65" : "text-bb-off/70";
+}
+
+const PREVIEW_WHITE = "/images/product-white-tee.jpg";
+const PREVIEW_DARK_TEE = "/images/product-oversized-tee.jpg";
+const PREVIEW_RED_TEE = "/images/product-red-tee.jpg";
+
+/** Neutral garment photo we tint to match the collection swatch (stock photos are not per-colour). */
+export function colourPreviewBase(color: BrandColor) {
+  switch (color.name) {
+    case "Terracotta":
+      return PREVIEW_RED_TEE;
+    case "Cobalt":
+    case "Ink Navy":
+    case "Pitch Black":
+    case "Washed Charcoal":
+    case "Slate Grey":
+    case "Heather Grey":
+      return PREVIEW_DARK_TEE;
+    case "Washed Mint":
+    case "Dusty Rose":
+    case "Ecru":
+    case "Chalk":
+    case "Sand":
+    case "Warm Taupe":
+    case "Sage":
+    case "Stone":
+    case "Olive":
+      return PREVIEW_WHITE;
+    default:
+      return color.image;
+  }
+}
+
+/** How strongly to tint the neutral base so it reads as the named colour. */
+export function colourTintOpacity(color: BrandColor | { tier: ColorTier; name: string }) {
+  if (color.tier === "accent") return 0.44;
+  if (color.tier === "earth") return 0.3;
+  return 0.18;
+}
+
+export function colourMetaByName(name: string) {
+  return brandColors.find((c) => c.name === name);
 }

@@ -1,13 +1,8 @@
 import Image from "next/image";
-import { listProducts } from "@/lib/catalog";
 import { ColorCollectionCard } from "@/components/store/color-collection-card";
 import { colorTiers, colorsByTier } from "@/lib/colors";
-import { colourPreviewImages } from "@/lib/product-colours";
 
 export default async function AllColoursPage() {
-  const products = await listProducts();
-  const previews = colourPreviewImages(products);
-
   return (
     <div>
       <section className="relative min-h-[36vh] border-b border-bb-off/15 md:grid md:min-h-[40vh] md:grid-cols-2">
@@ -35,12 +30,7 @@ export default async function AllColoursPage() {
               </div>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {colors.map((color) => (
-                  <ColorCollectionCard
-                    key={color.slug}
-                    color={color}
-                    variant="landscape"
-                    previewImage={previews.get(color.slug)}
-                  />
+                  <ColorCollectionCard key={color.slug} color={color} variant="landscape" />
                 ))}
               </div>
             </div>

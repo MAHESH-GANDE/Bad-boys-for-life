@@ -8,7 +8,7 @@ import { useToast } from "@/components/providers";
 import { useCartDrawer } from "@/components/store/cart-drawer";
 import { SizeGuideModal } from "@/components/store/size-guide-modal";
 import { colourSlugFromName, productImageForColour, resolveProductColour } from "@/lib/product-colours";
-import { sortColourEntries } from "@/lib/colors";
+import { sortColourEntries, colourMetaByName, colourTintOpacity } from "@/lib/colors";
 import type { ProductCardData } from "@/lib/catalog";
 
 export function ProductDetail({
@@ -50,6 +50,8 @@ export function ProductDetail({
   }, [colour]);
 
   const activeHex = colours.find(([n]) => n === colour)?.[1] ?? "#888888";
+  const colourMeta = colourMetaByName(colour);
+  const tint = colourMeta ? colourTintOpacity(colourMeta) : 0.2;
   const colourImages = product.images.filter((i) => i.colour === colour);
   const hero = productImageForColour(product, colour);
   const images = colourImages.length > 0 ? colourImages : hero ? [hero] : product.images;
@@ -116,8 +118,8 @@ export function ProductDetail({
             />
           )}
           <div
-            className="pointer-events-none absolute inset-0 mix-blend-color opacity-[0.18]"
-            style={{ backgroundColor: activeHex }}
+            className="pointer-events-none absolute inset-0 mix-blend-color"
+            style={{ backgroundColor: activeHex, opacity: tint }}
           />
           <div className="absolute bottom-3 left-3 flex items-center gap-2 bg-bb-black/75 px-3 py-1.5 backdrop-blur-sm">
             <span className="h-4 w-4 border border-bb-off/40" style={{ backgroundColor: activeHex }} />

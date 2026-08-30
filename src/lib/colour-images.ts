@@ -26,8 +26,8 @@ const TOP_IMAGES: Record<string, string> = {
   Olive: tee,
   Sage: hoodie,
   Terracotta: red,
-  Cobalt: shirt,
-  "Dusty Rose": shirt,
+  Cobalt: tee,
+  "Dusty Rose": white,
   "Washed Mint": white,
   "Ink Navy": shirt,
   Mocha: varsity,
@@ -63,7 +63,7 @@ const OUTERWEAR_IMAGES: Record<string, string> = {
 
 const SHIRT_IMAGES: Record<string, string> = {
   Sand: shirt,
-  "Dusty Rose": shirt,
+  "Dusty Rose": white,
   "Ink Navy": denimJ,
   Olive: shirt,
   Sage: shirt,
@@ -71,7 +71,7 @@ const SHIRT_IMAGES: Record<string, string> = {
   Chalk: white,
   "Pitch Black": shirt,
   "Washed Charcoal": shirt,
-  Cobalt: shirt,
+  Cobalt: white,
   Terracotta: red,
   "Washed Mint": white,
 };

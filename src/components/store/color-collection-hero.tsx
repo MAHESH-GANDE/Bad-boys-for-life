@@ -1,20 +1,19 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { BrandColor } from "@/lib/colors";
-import { colorMutedTextClass, colorTextClass } from "@/lib/colors";
+import { colorMutedTextClass, colorTextClass, colourPreviewBase, colourTintOpacity } from "@/lib/colors";
 
 export function ColorCollectionHero({
   color,
-  previewImage,
   productCount,
 }: {
   color: BrandColor;
-  previewImage?: string;
   productCount?: number;
 }) {
   const text = colorTextClass(color.hex);
   const muted = colorMutedTextClass(color.hex);
-  const heroImage = previewImage ?? color.image;
+  const heroImage = colourPreviewBase(color);
+  const tint = colourTintOpacity(color);
 
   return (
     <section className="border-b border-bb-off/15 md:grid md:min-h-[40vh] md:grid-cols-2">
@@ -54,8 +53,8 @@ export function ColorCollectionHero({
       <div className="relative min-h-[28vh] md:min-h-0">
         <Image src={heroImage} alt={`${color.name} menswear`} fill className="object-cover" priority />
         <div
-          className="pointer-events-none absolute inset-0 opacity-[0.08] mix-blend-color md:hidden"
-          style={{ background: color.hex }}
+          className="pointer-events-none absolute inset-0 mix-blend-color"
+          style={{ background: color.hex, opacity: tint }}
         />
       </div>
     </section>

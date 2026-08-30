@@ -1,24 +1,22 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { BrandColor } from "@/lib/colors";
-import { colorMutedTextClass, colorTextClass } from "@/lib/colors";
+import { colorMutedTextClass, colorTextClass, colourPreviewBase, colourTintOpacity } from "@/lib/colors";
 
 type Variant = "portrait" | "landscape";
 
 export function ColorCollectionCard({
   color,
   variant = "portrait",
-  previewImage,
 }: {
   color: BrandColor;
   variant?: Variant;
-  /** Real product photo in this colour (from catalog). */
-  previewImage?: string;
 }) {
   const text = colorTextClass(color.hex);
   const muted = colorMutedTextClass(color.hex);
   const aspect = variant === "landscape" ? "aspect-[16/11]" : "aspect-[4/5]";
-  const imageSrc = previewImage ?? color.image;
+  const imageSrc = colourPreviewBase(color);
+  const tint = colourTintOpacity(color);
 
   return (
     <Link
@@ -36,8 +34,8 @@ export function ColorCollectionCard({
             sizes={variant === "landscape" ? "(max-width: 768px) 100vw, 33vw" : "(max-width: 768px) 50vw, 25vw"}
           />
           <div
-            className="pointer-events-none absolute inset-0 opacity-[0.12] mix-blend-color"
-            style={{ background: color.hex }}
+            className="pointer-events-none absolute inset-0 mix-blend-color"
+            style={{ background: color.hex, opacity: tint }}
           />
         </div>
 

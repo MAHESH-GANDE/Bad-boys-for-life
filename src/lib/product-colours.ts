@@ -35,7 +35,7 @@ export function hexForColourName(name: string, fallback?: string) {
   return brandColors.find((c) => c.name === name)?.hex ?? fallback ?? "#888888";
 }
 
-/** Pick a representative product photo for colour collection cards (prefer tops over bottoms). */
+/** @deprecated Collection cards use colourPreviewBase() — kept for optional tooling. */
 export function colourPreviewImages(products: ProductCardData[]) {
   const map = new Map<string, string>();
   const garmentOrder = ["t-shirts", "shirts", "polos", "hoodies", "sweatshirts", "jackets", "jeans", "trousers", "cargos", "co-ords"];
