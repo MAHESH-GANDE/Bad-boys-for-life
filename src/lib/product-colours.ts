@@ -1,6 +1,5 @@
 import type { ProductCardData } from "@/lib/catalog";
 import { brandColors, colorBySlug, resolveColorSlug } from "@/lib/colors";
-import { canonicalImageForColour } from "@/lib/colour-images";
 
 type ProductImages = Pick<ProductCardData, "images">;
 type ProductWithVariants = ProductImages & Pick<ProductCardData, "variants">;
@@ -8,14 +7,7 @@ type ProductWithVariants = ProductImages & Pick<ProductCardData, "variants">;
 export function productImageForColour(product: ProductImages, colourName: string) {
   const tagged = product.images.find((i) => i.colour === colourName);
   if (tagged) return tagged;
-  const fallback = canonicalImageForColour(colourName);
-  const byUrl = product.images.find((i) => i.url === fallback);
-  if (byUrl) return { ...byUrl, colour: colourName };
-  return (
-    product.images.find((i) => !i.colour) ??
-    product.images[0] ??
-    null
-  );
+  return product.images.find((i) => !i.colour) ?? product.images[0] ?? null;
 }
 
 export function productHasColour(product: ProductWithVariants, colourName: string) {
@@ -43,11 +35,15 @@ export function hexForColourName(name: string, fallback?: string) {
   return brandColors.find((c) => c.name === name)?.hex ?? fallback ?? "#888888";
 }
 
-/** Pick a real product photo for each colour collection card / hero. */
+/** Pick a representative product photo for colour collection cards (prefer tops over bottoms). */
 export function colourPreviewImages(products: ProductCardData[]) {
   const map = new Map<string, string>();
+  const garmentOrder = ["t-shirts", "shirts", "polos", "hoodies", "sweatshirts", "jackets", "jeans", "trousers", "cargos", "co-ords"];
   for (const color of brandColors) {
-    const product = products.find((p) => productHasColour(p, color.name));
+    const sorted = [...products].sort(
+      (a, b) => garmentOrder.indexOf(a.category.slug) - garmentOrder.indexOf(b.category.slug),
+    );
+    const product = sorted.find((p) => productHasColour(p, color.name));
     if (!product) continue;
     const img = productImageForColour(product, color.name);
     if (img) map.set(color.slug, img.url);

@@ -22,8 +22,8 @@ export const brandColors: BrandColor[] = [
   { name: "Sand", slug: "sand", hex: "#C4B59A", tagline: "Warm summer neutral.", image: "/images/product-coord.jpg", tier: "core", stockShare: "Core" },
   { name: "Warm Taupe", slug: "warm-taupe", hex: "#A69485", tagline: "Linen foundation.", image: "/images/product-coord.jpg", tier: "core", stockShare: "Core" },
   // Earth & mineral (~25%)
-  { name: "Olive", slug: "olive", hex: "#4A5239", tagline: "Army utility tone.", image: "/images/product-cargo.jpg", tier: "earth", stockShare: "Earth" },
-  { name: "Sage", slug: "sage", hex: "#8A9487", tagline: "Muted green.", image: "/images/product-cargo.jpg", tier: "earth", stockShare: "Earth" },
+  { name: "Olive", slug: "olive", hex: "#4A5239", tagline: "Army utility tone.", image: "/images/product-shirt.jpg", tier: "earth", stockShare: "Earth" },
+  { name: "Sage", slug: "sage", hex: "#8A9487", tagline: "Muted green.", image: "/images/product-hoodie.jpg", tier: "earth", stockShare: "Earth" },
   { name: "Mocha", slug: "mocha", hex: "#6B5344", tagline: "Chocolate brown.", image: "/images/product-varsity.jpg", tier: "earth", stockShare: "Earth" },
   { name: "Camel", slug: "camel", hex: "#B8956B", tagline: "Knit & suede tone.", image: "/images/product-varsity.jpg", tier: "earth", stockShare: "Earth" },
   { name: "Stone", slug: "stone", hex: "#A39E93", tagline: "Dusty khaki.", image: "/images/product-trouser.jpg", tier: "earth", stockShare: "Earth" },
